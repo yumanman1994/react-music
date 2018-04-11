@@ -5,5 +5,15 @@
 ### 安装与运行
 
 ```
+git clone https://github.com/yumanman1994/react-music.git
+
+cd react-music
+
+yarn 
+
+yarn mock // 运行node
+
+yarn start // 运行项目 访问 http://localhost:3000
+
 
 感兴趣的童鞋可以来个star
