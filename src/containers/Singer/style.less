@@ -1,0 +1,36 @@
+@import '~common/style/variable';
+
+.singer {
+  position: fixed;
+  top: 88px;
+  bottom: 0;
+  width: 100%;
+
+
+  .slide-enter {
+    .music-list {
+        transform: scale3d(0, 0, 1);
+    }
+}
+.slide-enter.slide-enter-active {
+    .music-list {
+        transition: all 10s ease-in; // transform-origin: 0 0 0;
+        transform: scale3d(1, 1, 1);
+    } 
+    // width: 7.866667rem;
+    // height: 4.04rem; 
+    // visibility:visible; 
+    // transform: translate3d(0,0,0);
+}
+.slide-leave {
+    .music-list {
+        transform: scale3d(1, 1, 1);
+    } 
+}
+.slide-leave.slide-leave-active {
+    .music-list {
+        transition: all 10s ease-out; // transform-origin: 0 0 0;
+        transform: scale3d(0, 0, 1);
+    } 
+}
+}
