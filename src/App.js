@@ -6,7 +6,8 @@ import Rank from 'containers/Rank'
 import Recommend from 'containers/Recommend'
 import Search from 'containers/Search'
 import Singer from 'containers/Singer'
-
+import Player from 'containers/Player'
+import DevTools from 'mobx-react-devtools'
 class App extends Component {
   render() {
     return (
@@ -20,6 +21,8 @@ class App extends Component {
           <Route exact path="/rank" component={Rank} />
           <Route exact path="/search" component={Search} />
         </Switch>
+        <Player/>
+        {/* <DevTools /> */}
       </div>
     )
   }

@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:47:19 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-12 01:20:33
+ * @Last Modified time: 2018-04-16 21:13:46
  */
 
 import React, { Component } from 'react'
@@ -12,6 +12,7 @@ import Loading from 'components/Loading'
 import SongList from 'components/SongList'
 import PropTypes from 'prop-types'
 import { autobind } from 'core-decorators'
+import { observer, inject } from 'mobx-react'
 import { prefixStyle } from 'common/js/dom'
 
 import './style.less'
@@ -21,6 +22,10 @@ const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
 
 @withRouter
+@inject(stores => ({
+  selectPlay: stores.player.selectPlay
+}))
+@observer
 class MusicList extends Component {
   static defaultProps = {
     songs: [],
@@ -92,7 +97,7 @@ class MusicList extends Component {
           }}
         >
           <div className="song-list-wrapper">
-            <SongList songs={songs} />
+            <SongList selectItem={this.selectItem} songs={songs} />
           </div>
           {songs.length ? null : (
             <div className="loading-container">
@@ -149,6 +154,13 @@ class MusicList extends Component {
 
     this.bgImage.style.zIndex = zIndex
     this.bgImage.style[transform] = `scale(${scale})`
+  }
+
+  @autobind
+  selectItem(song,index){
+    this.props.selectPlay({list:this.props.songs,index})
+    // console.log(this.props)
+    // console.log(index)
   }
 
   @autobind
