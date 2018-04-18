@@ -3,6 +3,7 @@ import MusicList from 'containers/MusicList'
 import { autobind } from 'core-decorators'
 import { observer, inject } from 'mobx-react'
 import { getSingerDetail } from 'api/singer'
+import { processSongsUrl } from 'api/handlesongurl'
 import { createSong } from 'common/js/song'
 import { ERR_OK } from 'api/config'
 
@@ -22,11 +23,11 @@ class SingerDetail extends Component {
   }
   render() {
     return <div >
-      <MusicList 
-      songs={this.state.songs} 
-      title={this.props.singer.name} 
-      bgImage={this.props.singer.avatar}
-       />
+      <MusicList
+        songs={this.state.songs}
+        title={this.props.singer.name}
+        bgImage={this.props.singer.avatar}
+      />
     </div>
   }
 
@@ -49,12 +50,19 @@ class SingerDetail extends Component {
 
     getSingerDetail(singer.id).then(res => {
       if (res.code === ERR_OK) {
-        let songs = this._notmalizeSongs(res.data.list)
-        this.setState(
-          {
-            songs
-          }
-        )
+        processSongsUrl(this._notmalizeSongs(res.data.list)).then(songs => {
+          this.setState(
+            {
+              songs
+            }
+          )
+        })
+        // let songs = this._notmalizeSongs(res.data.list)
+        // this.setState(
+        //   {
+        //     songs
+        //   }
+        // )
       }
     })
   }
@@ -68,7 +76,7 @@ class SingerDetail extends Component {
         ret.push(createSong(musicData))
       }
     })
-   
+
     return ret
   }
 }

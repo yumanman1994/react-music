@@ -82,6 +82,12 @@
                         // &.pause {
                         //   animation-play-state: paused;
                         // }
+                        &.play {
+                            animation: rotate 20s linear infinite;
+                          }
+                          &.pause {
+                            animation-play-state: paused;
+                          }
                         .image {
                             position: absolute;
                             left: 0;
@@ -202,6 +208,12 @@
             padding: 0 10px 0 20px;
             img {
                 border-radius: 50%;
+                &.play {
+                    animation: rotate 20s linear infinite;
+                  }
+                  &.pause {
+                    animation-play-state: paused;
+                  }
             }
         }
         .text {
@@ -266,5 +278,16 @@
         opacity: 0;
         transition: all 0.4s;
       }
+
+       // 旋转动画
+  @keyframes rotate {
+    0%{
+      transform: rotate(0)
+    }
+
+    100%{
+      transform: rotate(360deg)
+    }
+  }
 
 }

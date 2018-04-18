@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-18 17:23:45
+ * @Last Modified time: 2018-04-19 02:46:39
  */
 
 import React, { Component } from 'react'
@@ -19,20 +19,17 @@ const transform = prefixStyle('transform')
     fullScreen: stores.player.fullScreen,
     playList: stores.player.playList,
     currentSong: stores.player.currentSong,
-    setFullScreen: stores.player.setFullScreen
+    setFullScreen: stores.player.setFullScreen,
+    playing: stores.player.playing,
+    setPlaying: stores.player.setPlaying
 }))
 @observer
 class Player extends Component {
 
     render() {
-        let { fullScreen, playList, currentSong } = this.props
+        let { fullScreen, playList, currentSong, playing } = this.props
         let normalShow = playList.length > 0 && fullScreen
         let miniShow = playList.length > 0 && !fullScreen
-
-        console.log(normalShow, miniShow)
-        // alert( fullScreen)
-        console.log(fullScreen, playList, currentSong)
-        // let playStyle = { display: `${playList.length > 0 ? '' : 'none'}` }
         return (
             <div className="player" >
                 <CSSTransition
@@ -67,7 +64,7 @@ class Player extends Component {
                         <div className="middle">
                             <div className="middle-l">
                                 <div className="cd-wrapper " ref={cdWrapper => { this.cdWrapper = cdWrapper }} >
-                                    <div className="cd">
+                                    <div className={`cd ${playing ? 'play' : 'play pause'}`} >
                                         <img src={currentSong.image} className="image" />
                                     </div>
                                 </div>
@@ -82,7 +79,7 @@ class Player extends Component {
                                     <i className="icon-prev"></i>
                                 </div>
                                 <div className="icon i-center">
-                                    <i className="icon-play"></i>
+                                    <i className={playing ? 'icon-pause' : 'icon-play'} onClick={this.togglePlaying} ></i>
                                 </div>
                                 <div className="icon i-right">
                                     <i className="icon-next"></i>
@@ -105,13 +102,19 @@ class Player extends Component {
                 >
                     <div className="mini-player" onClick={this.open} >
                         <div className="icon">
-                            <img src={currentSong.image} width="40" height="40" />
+                            <img className={playing ? 'play' : 'play pause'} src={currentSong.image} width="40" height="40" />
                         </div>
                         <div className="text">
                             <h2 className="name"  > {currentSong.name}</h2>
                             <p className="desc"   > {currentSong.singer}</p>
                         </div>
-                        <div className="control"></div>
+                        <div className="control">
+                            <i 
+                            
+                            onClick={(e) => {this.miniTogglePlaying(e)}} 
+                            className={playing ? 'icon-pause-mini' : 'icon-play-mini'} ></i>
+
+                        </div>
                         <div className="control">
                             <i className="icon-playlist"></i>
 
@@ -119,18 +122,46 @@ class Player extends Component {
 
                     </div>
                 </CSSTransition>
+                <audio ref={audio => { this.audio = audio }} src={currentSong.url} ></audio>
             </div>
 
 
         )
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        const prevPlaying = prevProps.playing
+        const currentPlaying = this.props.playing
+        if (prevPlaying !== currentPlaying) {
+            // if(currentPlaying){
+            //     this.audio.play()
+            // }else{
+            //     this.audio.play()
+            // }
+
+            currentPlaying ? this.audio.play() : this.audio.pause()
+        }
+
+    }
+    @autobind
+    miniTogglePlaying(e){
+        // console.log(e)
+        e.stopPropagation()
+        e.nativeEvent.stopImmediatePropagation();
+        this.togglePlaying()
+    }
+
+    @autobind
+    togglePlaying() {
+        this.props.setPlaying(!this.props.playing)
+    }
+
     @autobind
     back() {
         this.props.setFullScreen(false)
     }
-    @autobind 
-    open(){
+    @autobind
+    open() {
         this.props.setFullScreen(true)
     }
 
@@ -204,6 +235,8 @@ class Player extends Component {
             x, y, scale
         }
     }
+
+
 }
 
 export default Player
