@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-20 15:31:50
+ * @Last Modified time: 2018-04-20 17:22:40
  */
 
 import React, { Component } from 'react'
@@ -13,6 +13,8 @@ import animations from 'create-keyframe-animation'
 import { autobind } from 'core-decorators'
 import { observer, inject } from 'mobx-react'
 import { prefixStyle } from 'common/js/dom'
+import { playMode } from 'common/js/config'
+import { shuffle } from 'common/js/util'
 
 import './style.less'
 const transform = prefixStyle('transform')
@@ -25,7 +27,11 @@ const transform = prefixStyle('transform')
     playing: stores.player.playing,
     setPlaying: stores.player.setPlaying,
     currentIndex: stores.player.currentIndex,
-    setCurrentIndex: stores.player.setCurrentIndex
+    setCurrentIndex: stores.player.setCurrentIndex,
+    mode: stores.player.mode,
+    setPlayMode: stores.player.setPlayMode,
+    sequenceList: stores.player.sequenceList,
+    setPlayList: stores.player.setPlayList
 }))
 @observer
 class Player extends Component {
@@ -42,10 +48,12 @@ class Player extends Component {
     }
 
     render() {
-        let { fullScreen, playList, currentSong, playing } = this.props
+        let { fullScreen, playList, currentSong, playing, mode } = this.props
         let { songReady, currentTime, percent } = this.state
         let normalShow = playList.length > 0 && fullScreen
         let miniShow = playList.length > 0 && !fullScreen
+
+        let playModeCls = (mode === playMode.sequence) ? 'icon-sequence' : (mode === playMode.loop) ? 'icon-loop' : 'icon-random'
         return (
             <div className="player" >
                 <CSSTransition
@@ -97,7 +105,7 @@ class Player extends Component {
 
                             <div className="operators">
                                 <div className="icon i-left">
-                                    <i className="icon-sequence"></i>
+                                    <i className={playModeCls} onClick={this.changeMode} ></i>
                                 </div>
                                 <div className={`icon i-left ${songReady ? '' : 'disable'}`}>
                                     <i className={`icon-prev`} onClick={this.handlePrev} ></i>
@@ -155,6 +163,7 @@ class Player extends Component {
                     onError={this.audioError}
                     onCanPlay={this.audioReady}
                     onTimeUpdate={this.onTimeUpdate}
+                    onEnded={this.audioEnded}
                 ></audio>
             </div>
 
@@ -163,7 +172,7 @@ class Player extends Component {
     }
 
     componentDidMount() {
-        this.audio.volume = 0.5
+        // this.audio.volume = 0.5
         // this.songReady = false
 
     }
@@ -177,7 +186,59 @@ class Player extends Component {
 
     }
 
+    @autobind
+    audioEnded(){
+        // 单曲循环
+        if(this.props.mode === playMode.loop){
+            this.loop()
+        }else{
+            this.handleNext()
+        }
+    }
 
+    @autobind
+    loop(){
+        this.audio.currentTime = 0
+        this.audio.play()
+    }
+
+
+    /**
+     * 切换歌曲播放的模式
+     */
+    @autobind
+    changeMode() {
+
+        let mode = (this.props.mode + 1) % 3
+        // console.log(mode)
+        this.props.setPlayMode(mode)
+
+        let list = null
+
+        if (mode === playMode.random) {
+            list = shuffle(this.props.sequenceList)
+            // console.log(this.props.sequenceList)
+        } else {
+            // console.log(this.props.sequenceList.slice())
+            list = this.props.sequenceList.slice()
+        }
+
+        this.resetCurrentIndex(list)
+        this.props.setPlayList(list)
+
+
+    }
+
+    @autobind
+    resetCurrentIndex(list) {
+
+        let index = list.findIndex(item => {
+            return item.id === this.props.currentSong.id
+        })
+        // console.log(index)
+        this.props.setCurrentIndex(index)
+
+    }
 
     @autobind
     onTimeUpdate(e) {

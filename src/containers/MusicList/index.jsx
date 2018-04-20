@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:47:19 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-16 21:13:46
+ * @Last Modified time: 2018-04-20 17:09:51
  */
 
 import React, { Component } from 'react'
@@ -23,7 +23,8 @@ const backdrop = prefixStyle('backdrop-filter')
 
 @withRouter
 @inject(stores => ({
-  selectPlay: stores.player.selectPlay
+  selectPlay: stores.player.selectPlay,
+  randomPlay:stores.player.randomPlay
 }))
 @observer
 class MusicList extends Component {
@@ -60,9 +61,10 @@ class MusicList extends Component {
           }}
         >
           {songs.length > 0 ? (
-            <div className="play-wrapper">
+            <div className="play-wrapper"  >
               <div
                 className="play"
+                onClick={this.randomPlay}
                 ref={playBtn => {
                   this.playBtn = playBtn
                 }}
@@ -121,6 +123,8 @@ class MusicList extends Component {
     this.list.destroy()
   }
 
+
+
   @autobind
   handleBScroll(pos) {
     let newScrollY = pos.y
@@ -161,6 +165,11 @@ class MusicList extends Component {
     this.props.selectPlay({list:this.props.songs,index})
     // console.log(this.props)
     // console.log(index)
+  }
+
+  @autobind
+  randomPlay(){
+    this.props.randomPlay({list:this.props.songs})
   }
 
   @autobind

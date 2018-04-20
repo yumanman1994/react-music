@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-20 15:20:20 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-20 15:30:51
+ * @Last Modified time: 2018-04-20 16:23:24
  * @Desc mini播放器圆形进度条
  */
 
@@ -43,8 +43,8 @@ class ProgressCircle extends Component {
           />
           <circle className="progress-bar" cx="50" cy="50" r="50"
               fill="transparent"
-              stroke-dasharray={this.state.dashArray}
-              stroke-dashoffset={ (1-this.props.percent) * this.state.dashArray}
+              strokeDasharray={this.state.dashArray}
+              strokeDashoffset={ (1-this.props.percent) * this.state.dashArray}
     
           />
     

@@ -2,13 +2,14 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 19:29:58 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-16 22:26:50
+ * @Last Modified time: 2018-04-20 17:17:02
  * @Desc 播放
  */
 
 
 import { observable, action ,computed} from 'mobx'
 import { playMode } from 'common/js/config'
+import { shuffle } from 'common/js/util'
 
 class Player {
     // 是够播放
@@ -65,21 +66,46 @@ class Player {
     }
 
     @action.bound
-    selectPlay(playLoad){
+    selectPlay({list,index}){
         // console.log(this.fullScreen)
         // this.fullScreen = true
-        let {list,index} = playLoad
-        this.currentIndex = index
+        // let {list,index} = playLoad
+        // 当随机播放的时候 选择一个歌曲播放
+        if(this.mode===playMode.random){
+            let ramdomList = shuffle(list)
+            this.playList = ramdomList
+            index = findIndex(ramdomList,list[index])
+        }else{
+            this.playList = list
+        }
+
         this.fullScreen = true
-        
         this.playing = true
-        this.playList = list
+        this.currentIndex = index
         this.sequenceList = list
         // console.log( this.playList)
     }
 
+    @action.bound
+    randomPlay({list}){
+        this.mode = playMode.random,
+        this.sequenceList = list
+        let randomList = shuffle(list)
+        this.playList = randomList
+        this.currentIndex = 0
+        this.fullScreen = true
+        this.playing = true
+    }
+
 
 }
+
+function findIndex(list, song) {
+    return list.findIndex((item) => {
+      return item.id === song.id
+    })
+  }
+  
 
 const player = new Player()
 
