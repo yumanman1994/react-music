@@ -2,10 +2,12 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-19 02:46:39
+ * @Last Modified time: 2018-04-20 15:31:50
  */
 
 import React, { Component } from 'react'
+import ProgressBar from 'components/ProgressBar'
+import ProgressCircle from 'components/ProgressCircle'
 import { CSSTransition } from 'react-transition-group'
 import animations from 'create-keyframe-animation'
 import { autobind } from 'core-decorators'
@@ -21,13 +23,27 @@ const transform = prefixStyle('transform')
     currentSong: stores.player.currentSong,
     setFullScreen: stores.player.setFullScreen,
     playing: stores.player.playing,
-    setPlaying: stores.player.setPlaying
+    setPlaying: stores.player.setPlaying,
+    currentIndex: stores.player.currentIndex,
+    setCurrentIndex: stores.player.setCurrentIndex
 }))
 @observer
 class Player extends Component {
 
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            // 判断是够够点击切换
+            songReady: false,
+            currentTime: 0,
+            percent: 0
+        }
+    }
+
     render() {
         let { fullScreen, playList, currentSong, playing } = this.props
+        let { songReady, currentTime, percent } = this.state
         let normalShow = playList.length > 0 && fullScreen
         let miniShow = playList.length > 0 && !fullScreen
         return (
@@ -71,18 +87,26 @@ class Player extends Component {
                             </div>
                         </div>
                         <div className="bottom">
+                            <div className="progress-wrapper">
+                                <span className="time time-l" >{this.format(currentTime)}</span>
+                                <div className="progress-bar-wrapper" >
+                                    <ProgressBar percent={percent} percentChange={this.percentChange} />
+                                </div>
+                                <span className="time time-r" >{this.format(currentSong.duration)}</span>
+                            </div>
+
                             <div className="operators">
                                 <div className="icon i-left">
                                     <i className="icon-sequence"></i>
                                 </div>
-                                <div className="icon i-left">
-                                    <i className="icon-prev"></i>
+                                <div className={`icon i-left ${songReady ? '' : 'disable'}`}>
+                                    <i className={`icon-prev`} onClick={this.handlePrev} ></i>
                                 </div>
-                                <div className="icon i-center">
+                                <div className={`icon i-center ${songReady ? '' : 'disable'}`}>
                                     <i className={playing ? 'icon-pause' : 'icon-play'} onClick={this.togglePlaying} ></i>
                                 </div>
-                                <div className="icon i-right">
-                                    <i className="icon-next"></i>
+                                <div className={`icon i-right  ${songReady ? '' : 'disable'}`}>
+                                    <i className="icon-next" onClick={this.handleNext} ></i>
                                 </div>
                                 <div className="icon i-right">
                                     <i className="icon icon-not-favorite"></i>
@@ -109,10 +133,13 @@ class Player extends Component {
                             <p className="desc"   > {currentSong.singer}</p>
                         </div>
                         <div className="control">
-                            <i 
-                            
-                            onClick={(e) => {this.miniTogglePlaying(e)}} 
-                            className={playing ? 'icon-pause-mini' : 'icon-play-mini'} ></i>
+                            <ProgressCircle radius={32} percent={percent} >
+                                <i
+                                    onClick={(e) => { this.miniTogglePlaying(e) }}
+                                    className={`icon-mini ${playing ? 'icon-pause-mini' : 'icon-play-mini'}`} ></i>
+
+                            </ProgressCircle>
+
 
                         </div>
                         <div className="control">
@@ -122,29 +149,134 @@ class Player extends Component {
 
                     </div>
                 </CSSTransition>
-                <audio ref={audio => { this.audio = audio }} src={currentSong.url} ></audio>
+                <audio
+                    ref={audio => { this.audio = audio }}
+                    src={currentSong.url}
+                    onError={this.audioError}
+                    onCanPlay={this.audioReady}
+                    onTimeUpdate={this.onTimeUpdate}
+                ></audio>
             </div>
 
 
         )
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        const prevPlaying = prevProps.playing
-        const currentPlaying = this.props.playing
-        if (prevPlaying !== currentPlaying) {
-            // if(currentPlaying){
-            //     this.audio.play()
-            // }else{
-            //     this.audio.play()
-            // }
+    componentDidMount() {
+        this.audio.volume = 0.5
+        // this.songReady = false
 
-            currentPlaying ? this.audio.play() : this.audio.pause()
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        let props = this.props
+        this._watchPlayingChange(props.playing, prevProps.playing)
+        this._watchCurrentSong(props.currentSong, prevProps.currentSong)
+
+
+
+    }
+
+
+
+    @autobind
+    onTimeUpdate(e) {
+        // console.log(e.target)
+        this.setState({
+            currentTime: e.target.currentTime,
+            percent: e.target.currentTime / this.props.currentSong.duration
+        })
+
+    }
+
+    @autobind
+    percentChange(newPercent) {
+        console.log(newPercent)
+        this.audio.currentTime = this.props.currentSong.duration * newPercent
+        if (!this.props.playing) {
+            this.togglePlaying()
         }
 
     }
+
     @autobind
-    miniTogglePlaying(e){
+    format(interval) {
+        interval = Math.floor(interval)
+        const minte = Math.floor(interval / 60)
+        const second = this._pad(interval % 60)
+        return `${minte}:${second}`
+    }
+
+    @autobind
+    _pad(num, n = 2) {
+        let len = num.toString().length
+        while (len < n) {
+            num = '0' + num
+            len++
+        }
+
+        return num
+    }
+
+    @autobind
+    audioError() {
+        // alert('error')
+        this.setState({
+            songReady: true
+        })
+        // this.songReady = true
+
+    }
+
+    @autobind
+    audioReady() {
+        this.setState({
+            songReady: true
+        })
+
+    }
+
+
+    @autobind
+    handlePrev() {
+        if (!this.state.songReady) {
+            return
+        }
+        let index = this.props.currentIndex - 1
+        if (index === -1) {
+            index = this.props.playList.length - 1
+        }
+
+        this.props.setCurrentIndex(index)
+
+        this.setState({
+            songReady: true
+        })
+
+    }
+
+    @autobind
+    handleNext() {
+        console.log('n1')
+        if (!this.state.songReady) {
+            return
+        }
+        console.log('n2')
+        let index = this.props.currentIndex + 1
+        if (index === this.props.playList.length) {
+            index = 0
+        }
+
+        this.props.setCurrentIndex(index)
+        if (!this.props.playing) {
+            this.togglePlaying()
+        }
+        this.setState({
+            songReady: false
+        })
+    }
+    @autobind
+    miniTogglePlaying(e) {
         // console.log(e)
         e.stopPropagation()
         e.nativeEvent.stopImmediatePropagation();
@@ -216,6 +348,33 @@ class Player extends Component {
         this.cdWrapper.style[transform] = ''
     }
 
+    // @autobind
+    // _watchCurrentIndex(newCurrentIndex, oldCurrentIndex) {
+    //     if(oldCurrentIndex === newCurrentIndex){
+    //         return
+    //     }
+    //     console.log(oldCurrentIndex, newCurrentIndex)
+    //     this.audio.play()
+    // }
+
+    @autobind
+    _watchCurrentSong(newSong, oldSong) {
+        if (newSong.id === oldSong.id) {
+            return
+        }
+        console.log('_watchCurrentSong')
+
+        this.audio.play()
+
+    }
+
+    @autobind
+    _watchPlayingChange(currentPlaying, oldPlaying) {
+        if (oldPlaying !== currentPlaying) {
+            currentPlaying ? this.audio.play() : this.audio.pause()
+        }
+    }
+
     /**
      * 计算动画的一些数据
      * 
@@ -235,6 +394,7 @@ class Player extends Component {
             x, y, scale
         }
     }
+
 
 
 }
