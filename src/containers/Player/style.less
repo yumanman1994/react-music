@@ -84,10 +84,10 @@
                         // }
                         &.play {
                             animation: rotate 20s linear infinite;
-                          }
-                          &.pause {
+                        }
+                        &.pause {
                             animation-play-state: paused;
-                          }
+                        }
                         .image {
                             position: absolute;
                             left: 0;
@@ -99,34 +99,55 @@
                     }
                 }
             }
+            .middle-r {
+                display: inline-block;
+                vertical-align: top;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                .lyric-wrapper {
+                    width: 80%;
+                    margin: 0 auto;
+                    overflow: hidden;
+                    text-align: center;
+                    .text {
+                        line-height: 32px;
+                        color: @color-text-l;
+                        font-size: @font-size-medium;
+                        &.current {
+                            color: @color-text;
+                        }
+                    }
+                }
+            }
         }
         .bottom {
             position: absolute;
             bottom: 50px;
             width: 100%;
-            .progress-wrapper{
+            .progress-wrapper {
                 display: flex;
                 align-items: center;
                 width: 80%;
                 margin: 0px auto;
                 padding: 10px 0;
-                .time{
-                  color: @color-text;
-                  font-size: @font-size-small;
-                  flex: 0 0 30px;
-                  line-height: 30px;
-                  width: 30px;
-                  &.time-l{
-                    text-align: left;
-                  }
-                  &.time-r{
-                    text-align: right;
-                  }
+                .time {
+                    color: @color-text;
+                    font-size: @font-size-small;
+                    flex: 0 0 30px;
+                    line-height: 30px;
+                    width: 30px;
+                    &.time-l {
+                        text-align: left;
+                    }
+                    &.time-r {
+                        text-align: right;
+                    }
                 }
-                .progress-bar-wrapper{
-                  flex: 1;
+                .progress-bar-wrapper {
+                    flex: 1;
                 }
-              }
+            }
             .operators {
                 display: flex;
                 align-items: center;
@@ -193,13 +214,12 @@
             transform: translate3d(0, 0, 0);
             transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
         }
-
     }
     .normal-exit {
         opacity: 1;
         .top,
         .bottom {
-            transform: translate3d(0, 0, 0);   
+            transform: translate3d(0, 0, 0);
         }
     }
     .normal-exit.normal-exit-active {
@@ -233,10 +253,10 @@
                 border-radius: 50%;
                 &.play {
                     animation: rotate 20s linear infinite;
-                  }
-                  &.pause {
+                }
+                &.pause {
                     animation-play-state: paused;
-                  }
+                }
             }
         }
         .text {
@@ -283,34 +303,26 @@
         //     opacity: 0;
         // }
     }
-
     .mini-enter {
         opacity: 0;
-      }
-     
-      .mini-enter.mini-enter-active {
+    }
+    .mini-enter.mini-enter-active {
         opacity: 1;
         transition: all 0.4s;
-      }
-     
-     .mini-exit {
+    }
+    .mini-exit {
         opacity: 1;
-      }
-     
-     .mini-exit.mini-exit-active {
+    }
+    .mini-exit.mini-exit-active {
         opacity: 0;
         transition: all 0.4s;
-      }
-
-       // 旋转动画
-  @keyframes rotate {
-    0%{
-      transform: rotate(0)
+    } // 旋转动画
+    @keyframes rotate {
+        0% {
+            transform: rotate(0)
+        }
+        100% {
+            transform: rotate(360deg)
+        }
     }
-
-    100%{
-      transform: rotate(360deg)
-    }
-  }
-
 }

@@ -2,10 +2,10 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:47:58 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-11 23:32:56
+ * @Last Modified time: 2018-04-22 04:05:51
  */
 
-import React, { Component } from 'react'
+import React, { PureComponent ,Component } from 'react'
 import BScroll from 'better-scroll'
 import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
@@ -31,7 +31,7 @@ class Scroll extends Component {
 
   render() {
     return (
-      <div className={this.props.className} ref="wrapper">
+      <div className={this.props.className} ref={wrapper => {this.wrapper =wrapper}}>
         {this.props.children}
       </div>
     )
@@ -42,9 +42,24 @@ class Scroll extends Component {
       this._initScroll()
     }, 20)
   }
+  // shouldComponentUpdate(){
+  //   return false
+  // }
+
+  componentDidUpdate(prevProps, prevState){
+    if(prevProps.refreshData !== this.props.refreshData){
+      this.refresh()
+      console.log('-----re-----')
+    }
+    // 刷新 滚动
+    // console.log('componentDidUpdate')
+    // this.scroll && this.scroll.refresh()
+
+  }
+
   @autobind
   _initScroll() {
-    let wrapper = this.refs.wrapper
+    let wrapper = this.wrapper
     if (!wrapper) {
       return
     }

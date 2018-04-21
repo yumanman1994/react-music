@@ -44,7 +44,31 @@ app.post('/api/getPurlUrl', bodyParser.json(), function (req, res) {
 })
 
 
+// 歌词数据的获取
+app.get('/api/getLyric', function (req, res) {
+  const url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
+  axios.get(url, {
+    headers: {
+      referer: 'https://c.y.qq.com',
+      host: 'c.y.qq.com'
+    },
+    params: req.query
+  }).then((response) => {
+    let ret = response.data
+    if (typeof ret === 'string') {
+      let reg = /^\w+\(({[^()]+})\)$/
+      let matches = ret.match(reg)
+      if (matches) {
+        ret = JSON.parse(matches[1])
+      }
 
+    }
+
+    res.json(ret)
+  }).catch(e => {
+    console.log(e)
+  })
+})
 
 
 

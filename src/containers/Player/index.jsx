@@ -2,15 +2,18 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-20 17:22:40
+ * @Last Modified time: 2018-04-22 04:27:57
  */
 
 import React, { Component } from 'react'
 import ProgressBar from 'components/ProgressBar'
 import ProgressCircle from 'components/ProgressCircle'
+import LyricParse from 'lyric-parser'
 import { CSSTransition } from 'react-transition-group'
 import animations from 'create-keyframe-animation'
 import { autobind } from 'core-decorators'
+import Scroll from 'components/Scroll'
+import Lyric from './subPage/Lyric'
 import { observer, inject } from 'mobx-react'
 import { prefixStyle } from 'common/js/dom'
 import { playMode } from 'common/js/config'
@@ -43,13 +46,20 @@ class Player extends Component {
             // 判断是够够点击切换
             songReady: false,
             currentTime: 0,
-            percent: 0
+            percent: 0,
+            // 当前播放歌词的处理对象
+            currentLyric: null,
+            currentLyricLineNum: 0,
+            playingLyric: ''
+
         }
+
+
     }
 
     render() {
         let { fullScreen, playList, currentSong, playing, mode } = this.props
-        let { songReady, currentTime, percent } = this.state
+        let { songReady, currentTime, percent, currentLyric, currentLyricLineNum, playingLyric } = this.state
         let normalShow = playList.length > 0 && fullScreen
         let miniShow = playList.length > 0 && !fullScreen
 
@@ -86,13 +96,35 @@ class Player extends Component {
                             </h2>
                         </div>
                         <div className="middle">
-                            <div className="middle-l">
+                            <div className="middle-l" style={{ display: 'none' }} >
+                                {/* 歌曲图片 */}
                                 <div className="cd-wrapper " ref={cdWrapper => { this.cdWrapper = cdWrapper }} >
                                     <div className={`cd ${playing ? 'play' : 'play pause'}`} >
                                         <img src={currentSong.image} className="image" />
                                     </div>
                                 </div>
+                                {/* 当前歌词 */}
+
                             </div>
+                            {/* 歌词播放列表 */}
+                            <Lyric currentLyricLineNum={currentLyricLineNum} currentLyric={currentLyric} />
+                            {/* <Scroll className="middle-r" ref={lyricList => { this.lyricList = lyricList }} >
+                                <div className="lyric-wrapper"  >
+                                    {
+                                        currentLyric ? <div  >
+                                            {
+                                                currentLyric.lines.map((line, index) =>
+                                                    <p ref={lines => { lines && !this.lyricLines[index] && this.lyricLines.push(lines) }} className={`text ${currentLyricLineNum === index ? 'current' : ''}`} key={index} >
+                                                        {line.txt}
+                                                    </p>
+                                                )
+
+                                            }
+                                        </div> : null
+                                    }
+
+                                </div>
+                            </Scroll> */}
                         </div>
                         <div className="bottom">
                             <div className="progress-wrapper">
@@ -175,6 +207,7 @@ class Player extends Component {
         // this.audio.volume = 0.5
         // this.songReady = false
 
+
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -186,20 +219,29 @@ class Player extends Component {
 
     }
 
+    /**
+     * @description 当前播放歌曲播放完毕 事件监听
+     */
     @autobind
-    audioEnded(){
+    audioEnded() {
         // 单曲循环
-        if(this.props.mode === playMode.loop){
+        if (this.props.mode === playMode.loop) {
             this.loop()
-        }else{
+        } else {
             this.handleNext()
         }
     }
 
+    /**
+     * @description 单曲播放的时候 歌曲播放完毕 处理操作
+     */
     @autobind
-    loop(){
+    loop() {
         this.audio.currentTime = 0
         this.audio.play()
+        if (this.state.currentLyric) {
+            this.state.currentLyric.seek()
+        }
     }
 
 
@@ -229,6 +271,10 @@ class Player extends Component {
 
     }
 
+    /**
+     * @description 顺序切换为随机播放的时候 播放列表改变 获得正确的当前播放的索引
+     * @param {*Array} list 
+     */
     @autobind
     resetCurrentIndex(list) {
 
@@ -240,6 +286,10 @@ class Player extends Component {
 
     }
 
+    /**
+     * @description audio 播放时候的监听 取得当前播放的时间 和计算播放的比例
+     * @param {*} e 
+     */
     @autobind
     onTimeUpdate(e) {
         // console.log(e.target)
@@ -250,6 +300,10 @@ class Player extends Component {
 
     }
 
+    /**
+     * @description 滑动 播放进度bar 修改播放事件的回调 触发 播放的进度改变
+     * @param {Number 0 -1 } newPercent 
+     */
     @autobind
     percentChange(newPercent) {
         console.log(newPercent)
@@ -258,8 +312,17 @@ class Player extends Component {
             this.togglePlaying()
         }
 
+        if (this.state.currentLyric) {
+            console.log(this.props.currentSong.duration * newPercent * 1000)
+            this.state.currentLyric.seek(this.props.currentSong.duration * newPercent * 1000)
+        }
+
     }
 
+    /**
+     * @description 生成一个时间格式字符串  3:25
+     * @param {*秒数} interval 
+     */
     @autobind
     format(interval) {
         interval = Math.floor(interval)
@@ -279,6 +342,9 @@ class Player extends Component {
         return num
     }
 
+    /**
+     * @description audio 错误事件
+     */
     @autobind
     audioError() {
         // alert('error')
@@ -289,6 +355,9 @@ class Player extends Component {
 
     }
 
+    /**
+     * @description 监听audio ready 事件
+     */
     @autobind
     audioReady() {
         this.setState({
@@ -297,45 +366,75 @@ class Player extends Component {
 
     }
 
-
+    /**
+     * @description 播放上一曲
+     */
     @autobind
     handlePrev() {
         if (!this.state.songReady) {
             return
         }
-        let index = this.props.currentIndex - 1
-        if (index === -1) {
-            index = this.props.playList.length - 1
+        if (this.props.playList.length === 1) {
+            console.log('llp')
+            this.loop()
+        } else {
+            let index = this.props.currentIndex - 1
+            if (index === -1) {
+                index = this.props.playList.length - 1
+            }
+
+            this.props.setCurrentIndex(index)
+            this.setState({
+                songReady: true,
+                currentLyricLineNum: 0,
+                currentLyric: null
+            })
         }
 
-        this.props.setCurrentIndex(index)
-
-        this.setState({
-            songReady: true
-        })
+       
 
     }
 
+    /**
+     * @description 播放下一曲
+     */
     @autobind
     handleNext() {
         console.log('n1')
         if (!this.state.songReady) {
             return
         }
-        console.log('n2')
-        let index = this.props.currentIndex + 1
-        if (index === this.props.playList.length) {
-            index = 0
-        }
+        //如果列表歌曲长度为1 执行loop
+        if (this.props.playList.length === 1) {
+            this.loop()
+            console.log('llp')
+        } else {
+            let index = this.props.currentIndex + 1
+            if (index === this.props.playList.length) {
+                index = 0
+            }
 
-        this.props.setCurrentIndex(index)
-        if (!this.props.playing) {
-            this.togglePlaying()
+            this.props.setCurrentIndex(index)
+            if (!this.props.playing) {
+                this.togglePlaying()
+            }
+            if (this.state.currentLyric) {
+                this.state.currentLyric.stop()
+            }
+
+            this.setState({
+                songReady: false,
+                currentLyricLineNum: 0,
+                currentLyric: null
+            })
         }
-        this.setState({
-            songReady: false
-        })
+        
     }
+
+    /**
+     * @description mini播放器 播放控制
+     * @param {*} e 
+     */
     @autobind
     miniTogglePlaying(e) {
         // console.log(e)
@@ -344,20 +443,42 @@ class Player extends Component {
         this.togglePlaying()
     }
 
+
+    /**
+     * @description 点击播放控制按钮
+     */
     @autobind
     togglePlaying() {
+        if (!this.state.songReady) {
+            return
+        }
         this.props.setPlaying(!this.props.playing)
+        if (this.state.currentLyric) {
+            this.state.currentLyric.togglePlay()
+        }
     }
 
+    /**
+     * @description 关闭全屏播放
+     */
     @autobind
     back() {
         this.props.setFullScreen(false)
     }
+
+    /**
+     * @description 开启全屏播放
+     */
     @autobind
     open() {
         this.props.setFullScreen(true)
     }
 
+
+    /**
+     * @description 动画钩子
+     * @param {*} el 
+     */
     @autobind
     onEnter(el) {
         const { x, y, scale } = this._getPosAndScale()
@@ -409,26 +530,79 @@ class Player extends Component {
         this.cdWrapper.style[transform] = ''
     }
 
-    // @autobind
-    // _watchCurrentIndex(newCurrentIndex, oldCurrentIndex) {
-    //     if(oldCurrentIndex === newCurrentIndex){
-    //         return
-    //     }
-    //     console.log(oldCurrentIndex, newCurrentIndex)
-    //     this.audio.play()
-    // }
+    @autobind
+    getLyric() {
+        this.props.currentSong.getLyric()
+            .then(lyric => {
+                this.setState({
+                    currentLyric: new LyricParse(lyric, this.handleLyric)
+                }, () => {
+                    console.log(lyric)
 
+                    // 如果歌曲在播放 播放歌词
+                    if (this.props.playing) {
+                        this.state.currentLyric.play()
+                    }
+                })
+            })
+
+    }
+
+    /**
+     * @description 歌词播放的回调
+     * @param {*} param0 
+     */
+    @autobind
+    handleLyric({ lineNum, txt }) {
+        this.setState({
+            currentLyricLineNum: lineNum,
+            playingLyric: txt
+        }, () => {
+            console.log(lineNum)
+            // this.lyricLines = this.lyricLinesWrap.getElementsByClassName('text')
+            // console.log(this.lyricLines)
+            // if(this.lyricList){
+            //     if (this.state.currentLyricLineNum > 5) {
+            //         let lineEl = this.lyricLines[lineNum - 5]
+            //         this.lyricList.scrollToElement(lineEl, 1000)
+            //     } else {
+            //         this.lyricList.scrollTo(0, 0, 1000)
+            //     }
+            // }
+
+        })
+
+    }
+
+
+
+
+    /**
+     * @description 监听当前播放歌曲的变化
+     * @param {*} newSong 
+     * @param {*} oldSong 
+     */
     @autobind
     _watchCurrentSong(newSong, oldSong) {
         if (newSong.id === oldSong.id) {
             return
         }
-        console.log('_watchCurrentSong')
+        if (this.state.currentLyric) {
+            this.state.currentLyric.stop()
+        }
 
+
+        // 去获取当前播放歌词的数据
+        this.getLyric()
         this.audio.play()
 
     }
 
+    /**
+     * @description 监听Playing的变化 作处理
+     * @param {*} currentPlaying 
+     * @param {*} oldPlaying 
+     */
     @autobind
     _watchPlayingChange(currentPlaying, oldPlaying) {
         if (oldPlaying !== currentPlaying) {

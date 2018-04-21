@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-01 23:44:54 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-02 02:27:15
+ * @Last Modified time: 2018-04-22 04:15:01
  */
 
 import React, { Component } from 'react'
@@ -42,7 +42,7 @@ class Slider extends Component {
     let { dots, currentPageIndex } = this.state
     return (
       <div className="slider" ref="slider">
-        <div className="slider-group" ref="sliderGroup">
+        <div className="slider-group" ref={sliderGroup => {this.sliderGroup = sliderGroup}}>
           {this.props.children}
         </div>
         <div className="dots">
@@ -78,7 +78,7 @@ class Slider extends Component {
 
   @autobind
   _setSliderWidth(isResize) {
-    this.children = Array.prototype.slice.apply(this.refs.sliderGroup.children)
+    this.children = Array.prototype.slice.apply(this.sliderGroup.children)
     let width = 0
     let sliderWidth = this.refs.slider.clientWidth
     let childrenLen = this.children.length
@@ -94,7 +94,7 @@ class Slider extends Component {
       width += 2 * sliderWidth
     }
 
-    this.refs.sliderGroup.style.width = width + 'px'
+    this.sliderGroup.style.width = width + 'px'
   }
 
   @autobind

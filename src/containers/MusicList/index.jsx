@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:47:19 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-20 17:09:51
+ * @Last Modified time: 2018-04-22 00:45:43
  */
 
 import React, { Component } from 'react'
@@ -115,7 +115,7 @@ class MusicList extends Component {
     this.imageHeight = this.bgImage.clientHeight
     // 向上滚动时 底部遮羞层能向上变化的极限值
     this.minTranlateY = -this.imageHeight + RESERVED_HEIGHT
-    this.list.refs.wrapper.style.top = `${this.imageHeight}px`
+    this.list.wrapper.style.top = `${this.imageHeight}px`
   }
 
   componentWillUnmount() {
