@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-22 01:56:16 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-22 04:09:58
+ * @Last Modified time: 2018-04-22 15:33:13
  */
 
 
@@ -12,14 +12,18 @@ import Scroll from 'components/Scroll'
 import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
 
+import './Lyric.less'
+
 
 
 class Lyric extends Component {
     static defaultProps = {
-        currentLyricLineNum: 0
+        currentLyricLineNum: 0,
+        notLyric: false
     }
     static propTypes = {
-        currentLyricLineNum: PropTypes.number.isRequired
+        currentLyricLineNum: PropTypes.number.isRequired,
+        notLyric: PropTypes.bool.isRequired
         // currentLyric:PropTypes.array.isRequired
     }
     constructor(props) {
@@ -28,12 +32,22 @@ class Lyric extends Component {
         this.lyricLines = []
     }
     render() {
-        let { currentLyricLineNum, currentLyric } = this.props
+        let { currentLyricLineNum, currentLyric ,notLyric} = this.props
         return (
-            <Scroll refreshData={currentLyric && currentLyric.lines} className="middle-r" ref={lyricList => { this.lyricList = lyricList }} >
+            <Scroll 
+            refreshData={currentLyric && currentLyric.lines} 
+            className="middle-r" 
+            ref={lyricList => { this.lyricList = lyricList }} >
                 <div className="lyric-wrapper"  >
                     {
                         currentLyric ? <div  >
+                            {
+                                notLyric ? <div className="text center" >{currentLyric.lrc | '暂无歌词'}</div> : ''
+                                   
+                            }
+                            {
+                                currentLyric.lines.length ?   '' :<div className="text current center" >{currentLyric.lrc }</div>  
+                            }
                             {
                                 currentLyric.lines.map((line, index) =>
                                     <p ref={lines => { lines && !this.lyricLines[index] && this.lyricLines.push(lines) }}
@@ -53,7 +67,7 @@ class Lyric extends Component {
     }
 
     componentDidMount() {
-        console.log('componentDidMount',this.props)
+        console.log('componentDidMount', this.props)
         let { currentLyricLineNum } = this.props
         if (currentLyricLineNum > 5) {
             console.log(5)
@@ -62,14 +76,14 @@ class Lyric extends Component {
             setTimeout(() => {
                 this.lyricList.scrollToElement(lineEl, 0)
             }, 20);
-            
+
         } else {
             setTimeout(() => {
                 this.lyricList.scrollTo(0, 0, 0)
             }, 20);
-            
+
             console.log(0)
-            
+
         }
 
 
@@ -81,9 +95,9 @@ class Lyric extends Component {
         if (props.currentLyricLineNum !== prevProps.currentLyricLineNum) {
             let { currentLyricLineNum } = props
             if (currentLyricLineNum > 5) {
-                
+
                 let lineEl = this.lyricLines[currentLyricLineNum - 5]
-                console.log(lineEl,this.lyricList)
+                // console.log(lineEl, this.lyricList)
                 this.lyricList.scrollToElement(lineEl, 1000)
             } else {
                 this.lyricList.scrollTo(0, 0, 1000)
@@ -93,13 +107,13 @@ class Lyric extends Component {
 
     }
 
-    componentWillUpdate(nextProps, nextState){
-        if(nextProps.currentLyric !== this.props.currentLyric){
+    componentWillUpdate(nextProps, nextState) {
+        if (nextProps.currentLyric !== this.props.currentLyric) {
             this.lyricLines = []
         }
     }
 
-    shouldComponentUpdate(nextProps, nextState){
+    shouldComponentUpdate(nextProps, nextState) {
         // if(nextProps.currentLyric === this.props.currentLyric){
         //     return false
         // }
@@ -107,13 +121,13 @@ class Lyric extends Component {
         let oldNum = nextProps.currentLyricLineNum
         let newNum = this.props.currentLyricLineNum
 
-        if(nextProps.currentLyric === null || nextProps.currentLyric !== this.props.currentLyric){
+        if (nextProps.currentLyric === null || nextProps.currentLyric !== this.props.currentLyric) {
             // console.log(nextProps.currentLyric)
             console.log('first')
             return true
         }
 
-        if(oldNum === newNum){
+        if (oldNum === newNum) {
             return false
         }
 

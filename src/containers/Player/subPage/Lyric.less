@@ -1,0 +1,32 @@
+@import '~common/style/variable';
+@import '~common/style/minxin';
+.middle-r {
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    .lyric-wrapper {
+        width: 80%;
+        min-height: 100%;
+        margin: 0 auto;
+        overflow: hidden;
+        text-align: center;
+        .text {
+            line-height: 32px;
+            color: @color-text-l;
+            font-size: @font-size-medium;
+            &.current {
+                color: @color-text;
+            }
+        }
+    }
+
+    .center{
+        position: absolute;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+    }
+}

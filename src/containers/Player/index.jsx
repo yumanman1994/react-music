@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-22 04:27:57
+ * @Last Modified time: 2018-04-22 15:57:22
  */
 
 import React, { Component } from 'react'
@@ -21,6 +21,7 @@ import { shuffle } from 'common/js/util'
 
 import './style.less'
 const transform = prefixStyle('transform')
+const transitionDuration = prefixStyle('transitionDuration')
 
 @inject(stores => ({
     fullScreen: stores.player.fullScreen,
@@ -50,16 +51,21 @@ class Player extends Component {
             // 当前播放歌词的处理对象
             currentLyric: null,
             currentLyricLineNum: 0,
-            playingLyric: ''
+            playingLyric: '',
+            currentShow: 'cd',
+            notLyric: false
 
         }
+
+        this.touch = {}
+
 
 
     }
 
     render() {
         let { fullScreen, playList, currentSong, playing, mode } = this.props
-        let { songReady, currentTime, percent, currentLyric, currentLyricLineNum, playingLyric } = this.state
+        let { notLyric, currentShow, songReady, currentTime, percent, currentLyric, currentLyricLineNum, playingLyric } = this.state
         let normalShow = playList.length > 0 && fullScreen
         let miniShow = playList.length > 0 && !fullScreen
 
@@ -95,8 +101,13 @@ class Player extends Component {
                                 {currentSong.singer}
                             </h2>
                         </div>
-                        <div className="middle">
-                            <div className="middle-l" style={{ display: 'none' }} >
+                        <div
+                            className="middle"
+                            onTouchStart={this.middleTouchStart}
+                            onTouchMove={this.middleTouchMove}
+                            onTouchEnd={this.middleTouchEnd}
+                        >
+                            <div className="middle-l" ref={middleL => { this.middleL = middleL }} >
                                 {/* 歌曲图片 */}
                                 <div className="cd-wrapper " ref={cdWrapper => { this.cdWrapper = cdWrapper }} >
                                     <div className={`cd ${playing ? 'play' : 'play pause'}`} >
@@ -104,10 +115,20 @@ class Player extends Component {
                                     </div>
                                 </div>
                                 {/* 当前歌词 */}
+                                <div className="playing-lyric-wrapper" >
+                                    <div className="playing-lyric" >
+                                        {notLyric ? currentLyric.lrc : playingLyric}
+                                    </div>
+
+                                </div>
 
                             </div>
                             {/* 歌词播放列表 */}
-                            <Lyric currentLyricLineNum={currentLyricLineNum} currentLyric={currentLyric} />
+                            <Lyric
+                                ref={lyricListWrap => { this.lyricListWrap = lyricListWrap }}
+                                notLyric={notLyric}
+                                currentLyricLineNum={currentLyricLineNum}
+                                currentLyric={currentLyric} />
                             {/* <Scroll className="middle-r" ref={lyricList => { this.lyricList = lyricList }} >
                                 <div className="lyric-wrapper"  >
                                     {
@@ -127,6 +148,13 @@ class Player extends Component {
                             </Scroll> */}
                         </div>
                         <div className="bottom">
+
+                            <div className="dot-wrapper">
+                                <span className={`dot ${currentShow === 'cd' ? 'active' : ''}`} ></span>
+                                <span className={`dot ${currentShow === 'lyric' ? 'active' : ''}`}></span>
+                            </div>
+
+
                             <div className="progress-wrapper">
                                 <span className="time time-l" >{this.format(currentTime)}</span>
                                 <div className="progress-bar-wrapper" >
@@ -196,12 +224,15 @@ class Player extends Component {
                     onCanPlay={this.audioReady}
                     onTimeUpdate={this.onTimeUpdate}
                     onEnded={this.audioEnded}
+                    onSeeked={this.onSeeked}
                 ></audio>
             </div>
 
 
         )
     }
+
+
 
     componentDidMount() {
         // this.audio.volume = 0.5
@@ -214,6 +245,112 @@ class Player extends Component {
         let props = this.props
         this._watchPlayingChange(props.playing, prevProps.playing)
         this._watchCurrentSong(props.currentSong, prevProps.currentSong)
+
+
+
+    }
+
+
+    @autobind
+    middleTouchStart(e) {
+        e.preventDefault()
+        const touch = e.touches[0]
+        this.touch.startX = touch.pageX
+        this.touch.startY = touch.pageY
+        this.touch.initiated = true
+
+        // 用来判断是否是一次移动
+        this.touch.moved = false
+
+
+
+
+    }
+    @autobind
+    middleTouchMove(e) {
+        e.preventDefault()
+        if (!this.touch.initiated) {
+            return
+        }
+        const touch = e.touches[0]
+        //  这里要维护 x y轴的滚动偏差 当y轴的滚动偏差大于X轴的滚动偏差的时候不应该滚动
+        const deltaX = touch.pageX - this.touch.startX
+        const deltaY = touch.pageY - this.touch.startY
+
+        if (Math.abs(deltaY) > Math.abs(deltaX)) {
+            return
+        }
+        if (!this.touch.moved) {
+            this.touch.moved = true
+        }
+
+        const left = this.state.currentShow === 'cd' ? 0 : -window.innerWidth
+        const offsetWidth = Math.min(
+            0,
+            Math.max(-window.innerWidth, left + deltaX)
+        )
+        this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
+
+        // console.log(this.lyricListWrap.lyricList.wrapper)
+        this.lyricListWrap.lyricList.wrapper.style[
+            transform
+        ] = `translate3d(${offsetWidth}px,0,0)`
+        this.lyricListWrap.lyricList.wrapper.style[transitionDuration] = 0
+        this.middleL.style.opacity = 1 - this.touch.percent
+        this.middleL.style[transitionDuration] = 0
+        // this.l
+
+
+
+
+    }
+    @autobind
+    middleTouchEnd(e) {
+        e.preventDefault()
+        if (!this.touch.moved) {
+            return
+        }
+        console.log(this.touch.percent)
+        this.touch.initiated = false
+        let offsetWidth, opacity
+        if (this.state.currentShow === 'cd') {
+            if (this.touch.percent > 0.1) {
+                console.log('ddd')
+                offsetWidth = -window.innerWidth
+                opacity = 0
+                this.setState({
+                    currentShow: 'lyric'
+                })
+
+            } else {
+
+                offsetWidth = 0
+                opacity = 1
+
+            }
+
+        } else {
+            if (this.touch.percent < 0.9) {
+                offsetWidth = 0
+                opacity = 1
+                this.setState({
+                    currentShow: 'cd'
+                })
+
+            } else {
+                offsetWidth = -window.innerWidth
+                opacity = 0
+            }
+
+        }
+
+        this.lyricListWrap.lyricList.wrapper.style[
+            transform
+        ] = `translate3d(${offsetWidth}px,0,0)`
+        this.lyricListWrap.lyricList.wrapper.style[transitionDuration] = '300ms'
+        this.middleL.style.opacity = opacity
+        this.middleL.style[transitionDuration] = '300ms'
+        // this.l
 
 
 
@@ -243,6 +380,7 @@ class Player extends Component {
             this.state.currentLyric.seek()
         }
     }
+
 
 
     /**
@@ -292,7 +430,7 @@ class Player extends Component {
      */
     @autobind
     onTimeUpdate(e) {
-        // console.log(e.target)
+        console.log('onTimeUpdate')
         this.setState({
             currentTime: e.target.currentTime,
             percent: e.target.currentTime / this.props.currentSong.duration
@@ -317,6 +455,12 @@ class Player extends Component {
             this.state.currentLyric.seek(this.props.currentSong.duration * newPercent * 1000)
         }
 
+    }
+
+
+    @autobind
+    onSeeked() {
+        this.state.currentLyric.seek(this.props.currentSong.duration * this.state.percent * 1000)
     }
 
     /**
@@ -391,7 +535,7 @@ class Player extends Component {
             })
         }
 
-       
+
 
     }
 
@@ -425,10 +569,11 @@ class Player extends Component {
             this.setState({
                 songReady: false,
                 currentLyricLineNum: 0,
-                currentLyric: null
+                currentLyric: null,
+                playingLyric: ''
             })
         }
-        
+
     }
 
     /**
@@ -535,14 +680,24 @@ class Player extends Component {
         this.props.currentSong.getLyric()
             .then(lyric => {
                 this.setState({
-                    currentLyric: new LyricParse(lyric, this.handleLyric)
+                    currentLyric: new LyricParse(lyric, this.handleLyric),
+                    playingLyric: '',
+                    notLyric: false
+
                 }, () => {
-                    console.log(lyric)
+                    console.log(this.state.currentLyric)
 
                     // 如果歌曲在播放 播放歌词
                     if (this.props.playing) {
                         this.state.currentLyric.play()
                     }
+                })
+            }).catch(e => {
+                this.setState({
+                    currentLyric: null,
+                    playingLyric: '暂无歌词',
+                    currentLyricLineNum: 0,
+                    notLyric: true
                 })
             })
 
@@ -557,19 +712,6 @@ class Player extends Component {
         this.setState({
             currentLyricLineNum: lineNum,
             playingLyric: txt
-        }, () => {
-            console.log(lineNum)
-            // this.lyricLines = this.lyricLinesWrap.getElementsByClassName('text')
-            // console.log(this.lyricLines)
-            // if(this.lyricList){
-            //     if (this.state.currentLyricLineNum > 5) {
-            //         let lineEl = this.lyricLines[lineNum - 5]
-            //         this.lyricList.scrollToElement(lineEl, 1000)
-            //     } else {
-            //         this.lyricList.scrollTo(0, 0, 1000)
-            //     }
-            // }
-
         })
 
     }
