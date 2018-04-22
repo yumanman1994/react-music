@@ -1,49 +1,46 @@
 @import '~common/style/variable';
 @import '~common/style/minxin';
-.song-list {
-  .item {
+.song-list{
+  .item{
     display: flex;
     align-items: center;
     box-sizing: border-box;
     height: 64px;
     font-size: @font-size-medium;
-    .rank {
+    .rank-item{
       flex: 0 0 25px;
       width: 25px;
       margin-right: 30px;
       text-align: center;
-      .icon {
+      .icon{
         display: inline-block;
         width: 25px;
         height: 24px;
         background-size: 25px 24px;
-        &.icon0 {
+        &.icon0{
           .bg-image('first');
         }
-        &.icon1 {
+        &.icon1{
           .bg-image('second');
         }
-        &.icon2 {
+        &.icon2{
           .bg-image('third');
         }
       }
-
-      .text {
+      .text{
         color: @color-theme;
         font-size: @font-size-large;
       }
     }
-
-    .content {
+    .content{
       flex: 1;
       line-height: 20px;
       overflow: hidden;
-      .name {
+      .name{
         .no-wrap();
         color: @color-text;
       }
-
-      .desc {
+      .desc{
         .no-wrap();
         margin-top: 4px;
         color: @color-text-d;

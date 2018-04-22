@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-22 15:57:22
+ * @Last Modified time: 2018-04-22 23:11:42
  */
 
 import React, { Component } from 'react'
@@ -167,13 +167,13 @@ class Player extends Component {
                                 <div className="icon i-left">
                                     <i className={playModeCls} onClick={this.changeMode} ></i>
                                 </div>
-                                <div className={`icon i-left ${songReady ? '' : 'disable'}`}>
+                                <div className={`icon i-left ${(songReady && currentLyric) ? '' : 'disable'}`}>
                                     <i className={`icon-prev`} onClick={this.handlePrev} ></i>
                                 </div>
-                                <div className={`icon i-center ${songReady ? '' : 'disable'}`}>
+                                <div className={`icon i-center ${(songReady && currentLyric) ? '' : 'disable'}`}>
                                     <i className={playing ? 'icon-pause' : 'icon-play'} onClick={this.togglePlaying} ></i>
                                 </div>
-                                <div className={`icon i-right  ${songReady ? '' : 'disable'}`}>
+                                <div className={`icon i-right  ${(songReady && currentLyric) ? '' : 'disable'}`}>
                                     <i className="icon-next" onClick={this.handleNext} ></i>
                                 </div>
                                 <div className="icon i-right">
@@ -460,7 +460,10 @@ class Player extends Component {
 
     @autobind
     onSeeked() {
-        this.state.currentLyric.seek(this.props.currentSong.duration * this.state.percent * 1000)
+        if( this.state.currentLyric){
+            this.state.currentLyric.seek(this.props.currentSong.duration * this.state.percent * 1000)
+        }
+        
     }
 
     /**
@@ -522,16 +525,25 @@ class Player extends Component {
             console.log('llp')
             this.loop()
         } else {
+            if (this.state.currentLyric) {
+                console.log('-------prevstop')
+                this.state.currentLyric.stop()
+            }
             let index = this.props.currentIndex - 1
             if (index === -1) {
                 index = this.props.playList.length - 1
             }
 
+            if (!this.props.playing) {
+                this.togglePlaying()
+            }
+
             this.props.setCurrentIndex(index)
             this.setState({
-                songReady: true,
+                songReady: false,
                 currentLyricLineNum: 0,
-                currentLyric: null
+                currentLyric: null,
+                playingLyric: ''
             })
         }
 
@@ -551,8 +563,12 @@ class Player extends Component {
         //如果列表歌曲长度为1 执行loop
         if (this.props.playList.length === 1) {
             this.loop()
-            console.log('llp')
+            console.log('loop')
         } else {
+            if (this.state.currentLyric) {
+                console.log('-------nextstop')
+                this.state.currentLyric.stop()
+            }
             let index = this.props.currentIndex + 1
             if (index === this.props.playList.length) {
                 index = 0
@@ -562,9 +578,9 @@ class Player extends Component {
             if (!this.props.playing) {
                 this.togglePlaying()
             }
-            if (this.state.currentLyric) {
-                this.state.currentLyric.stop()
-            }
+            // if (this.state.currentLyric) {
+            //     this.state.currentLyric.stop()
+            // }
 
             this.setState({
                 songReady: false,
@@ -687,11 +703,12 @@ class Player extends Component {
                 }, () => {
                     console.log(this.state.currentLyric)
 
-                    // 如果歌曲在播放 播放歌词
-                    if (this.props.playing) {
-                        this.state.currentLyric.play()
-                    }
+                   
                 })
+                 // 如果歌曲在播放 播放歌词
+                 if (this.props.playing) {
+                    this.state.currentLyric.play()
+                }
             }).catch(e => {
                 this.setState({
                     currentLyric: null,
@@ -729,7 +746,9 @@ class Player extends Component {
         if (newSong.id === oldSong.id) {
             return
         }
+        console.log('_watchCurrentSong----------------',this.state.currentLyric)
         if (this.state.currentLyric) {
+            console.log('-------stop')
             this.state.currentLyric.stop()
         }
 

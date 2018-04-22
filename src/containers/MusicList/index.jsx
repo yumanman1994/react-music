@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:47:19 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-22 00:45:43
+ * @Last Modified time: 2018-04-23 01:32:12
  */
 
 import React, { Component } from 'react'
@@ -24,19 +24,22 @@ const backdrop = prefixStyle('backdrop-filter')
 @withRouter
 @inject(stores => ({
   selectPlay: stores.player.selectPlay,
-  randomPlay:stores.player.randomPlay
+  randomPlay:stores.player.randomPlay,
+  playList: stores.player.playList
 }))
 @observer
 class MusicList extends Component {
   static defaultProps = {
     songs: [],
     bgImage: '',
-    title: ''
+    title: '',
+    rank:false
   }
   static propTypes = {
     songs: PropTypes.array.isRequired,
     bgImage: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired
+    title: PropTypes.string.isRequired,
+    rank:PropTypes.bool.isRequired
   }
   constructor(props) {
     super(props)
@@ -45,8 +48,7 @@ class MusicList extends Component {
   }
   render() {
     let { bgImage, title, songs } = this.props
-    console.log(songs)
-    console.log(this.props)
+   
     return (
       <div className="music-list">
         <div className="back" onClick={this.back} >
@@ -90,7 +92,7 @@ class MusicList extends Component {
           }}
         />
         <Scroll
-          className="list"
+          className={`list ${this.props.playList.length  ? 'bottom-60' : ''}`}
           probeType={3}
           listenScroll={true}
           onScroll={this.handleBScroll}
@@ -99,7 +101,7 @@ class MusicList extends Component {
           }}
         >
           <div className="song-list-wrapper">
-            <SongList selectItem={this.selectItem} songs={songs} />
+            <SongList rank={this.props.rank} selectItem={this.selectItem} songs={songs} />
           </div>
           {songs.length ? null : (
             <div className="loading-container">
@@ -121,6 +123,12 @@ class MusicList extends Component {
   componentWillUnmount() {
     this.list.disable()
     this.list.destroy()
+  }
+
+  componentDidUpdate(prevProps,prevState){
+    if(prevProps.playList.length !== this.props.playList.length){
+      this.list.refresh()
+    }
   }
 
 

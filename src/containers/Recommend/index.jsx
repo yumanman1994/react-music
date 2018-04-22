@@ -1,16 +1,23 @@
 import React, { Component } from 'react'
+import { Route } from 'react-router-dom'
 import { autobind } from 'core-decorators'
 import Slider from 'components/Slider'
 import Scroll from 'components/Scroll'
 import Loading from 'components/Loading'
 import LazyLoad, { forceCheck } from 'react-lazyload'
-
+import { observer, inject } from 'mobx-react'
+import Disc from 'containers/Disc'
 import { getRecommend, getDiscList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
 
 import './style.less'
 const defaultImg = require('common/image/default.png')
 
+@inject(stores => ({
+  playList: stores.player.playList,
+  setDisc:stores.disc.setDisc
+}))
+@observer
 class Recommend extends Component {
   constructor(props) {
     super(props)
@@ -22,7 +29,10 @@ class Recommend extends Component {
   render() {
     let { recommends, discList } = this.state
     return (
-      <div className="recommend">
+      <div 
+      className="recommend"
+      style={{bottom:this.props.playList.length>0 ? '60px' :0}}
+      >
         <Scroll
           probeType={3}
           className="recommend-content"
@@ -45,7 +55,7 @@ class Recommend extends Component {
               <h1 className="list-title">热门歌单推荐</h1>
               <ul>
                 {discList.map((item, index) => (
-                  <li className="item" key={index}>
+                  <li className="item" key={index} onClick={() => {this.selectItem(item)}} >
                     <div className="icon">
                       <LazyLoad
                         height={60}
@@ -79,6 +89,7 @@ class Recommend extends Component {
             </div>
           )}
         </Scroll>
+        <Route path="/recommend/:id" component={Disc} />
       </div>
     )
   }
@@ -88,9 +99,17 @@ class Recommend extends Component {
     this._getRecommend()
     this._getDiscList()
     // }, 10000)
-    window.addEventListener('scroll', () => {
-      console.log('scroll')
-    })
+    // window.addEventListener('scroll', () => {
+    //   console.log('scroll')
+    // })
+  }
+
+
+  @autobind
+  selectItem(item){
+    this.props.setDisc(item)
+    this.props.history.push(`/recommend/${item.dissid}`)
+
   }
 
   @autobind

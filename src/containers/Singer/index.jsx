@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-04 01:01:50 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-12 02:23:26
+ * @Last Modified time: 2018-04-22 16:43:59
  * @desc 歌手页面
  */
 import React, { Component } from 'react'
@@ -21,7 +21,8 @@ const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10
 
 @inject(stores => ({
-  setSinger:stores.singer.setSinger
+  setSinger:stores.singer.setSinger,
+  playList: stores.player.playList
 }))
 @observer
 class Singer extends Component {
@@ -33,7 +34,9 @@ class Singer extends Component {
   }
   render() {
     return (
-      <div className="singer">
+      <div className="singer" 
+       style={{bottom:this.props.playList.length>0 ? '60px' :0}}
+      >
         <ListView
           handleClick={this.handleClick}
           listData={this.state.singers}
