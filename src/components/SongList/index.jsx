@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:48:13 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-23 01:41:17
+ * @Last Modified time: 2018-04-24 16:39:12
  */
 
 import React, { Component } from 'react'
@@ -19,6 +19,7 @@ class SongList extends Component {
     songs: PropTypes.array.isRequired,
     rank: PropTypes.bool.isRequired
   }
+  
   render() {
     return (
       <div className="song-list">

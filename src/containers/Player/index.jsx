@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-22 23:11:42
+ * @Last Modified time: 2018-04-25 00:36:11
  */
 
 import React, { Component } from 'react'
@@ -117,7 +117,8 @@ class Player extends Component {
                                 {/* 当前歌词 */}
                                 <div className="playing-lyric-wrapper" >
                                     <div className="playing-lyric" >
-                                        {notLyric ? currentLyric.lrc : playingLyric}
+                                        {/* {notLyric ? currentLyric.lrc : playingLyric} */}
+                                        {playingLyric}
                                     </div>
 
                                 </div>

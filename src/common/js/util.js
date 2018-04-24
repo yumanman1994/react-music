@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-20 16:02:01 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-20 16:26:24
+ * @Last Modified time: 2018-04-24 22:44:27
  * @Desc 工具函数
  */
 
@@ -29,3 +29,24 @@ export function shuffle(arr){
 
     return _arr
 }
+
+
+/**
+ * @description 事件流
+ * @param {*} func 
+ * @param {*} delay 
+ */
+export function debounce(func, delay) {
+    let timer
+    return function (...args) {
+      if (timer) {
+        clearTimeout(timer)
+      }
+  
+      timer = setTimeout(() => {
+        func.apply(this, args)
+      }, delay);
+  
+    }
+  }
+  

@@ -2,10 +2,10 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:47:58 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-22 04:05:51
+ * @Last Modified time: 2018-04-25 00:06:26
  */
 
-import React, { PureComponent ,Component } from 'react'
+import React, { PureComponent, Component } from 'react'
 import BScroll from 'better-scroll'
 import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
@@ -15,14 +15,20 @@ class Scroll extends Component {
     probeType: 1,
     click: true,
     className: '',
-    listenScroll: false
+    listenScroll: false,
+    pullUpLoad: false,
+    pullUpLoadFunc: () => {
+      console.log('pullUpLoadFunc')
+    }
   }
 
   static propTypes = {
     probeType: PropTypes.number.isRequired,
     click: PropTypes.bool.isRequired,
     className: PropTypes.string.isRequired,
-    listenScroll: PropTypes.bool.isRequired
+    listenScroll: PropTypes.bool.isRequired,
+    pullUpLoad: PropTypes.any.isRequired,
+    pullUpLoadFunc: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -31,7 +37,7 @@ class Scroll extends Component {
 
   render() {
     return (
-      <div className={this.props.className} ref={wrapper => {this.wrapper =wrapper}}>
+      <div className={this.props.className} ref={wrapper => { this.wrapper = wrapper }}>
         {this.props.children}
       </div>
     )
@@ -46,10 +52,9 @@ class Scroll extends Component {
   //   return false
   // }
 
-  componentDidUpdate(prevProps, prevState){
-    if(prevProps.refreshData !== this.props.refreshData){
+  componentDidUpdate(prevProps, prevState) {
+    if (JSON.stringify(prevProps.refreshData) !== JSON.stringify(this.props.refreshData)) {
       this.refresh()
-      console.log('-----re-----')
     }
     // 刷新 滚动
     // console.log('componentDidUpdate')
@@ -66,7 +71,8 @@ class Scroll extends Component {
 
     this.scroll = new BScroll(wrapper, {
       probeType: this.props.probeType,
-      click: this.props.click
+      click: this.props.click,
+      pullUpLoad:this.props.pullUpLoad
     })
 
     if (this.props.listenScroll) {
@@ -74,15 +80,22 @@ class Scroll extends Component {
         if (!this.props.onScroll) {
           return
         }
-        
+
 
         this.props.onScroll(pos)
       })
     }
 
-    this.scroll.on('scrollEnd',() =>{
-      console.log('end')
-    })
+    if (this.props.pullUpLoad) {
+      let me = this
+      this.scroll.on('pullingUp', pos => {
+        this.props.pullUpLoadFunc(pos)
+      })
+    }
+
+    // this.scroll.on('scrollEnd',() =>{
+    //   console.log('end')
+    // })
   }
 
   // 启用 better-scroll, 默认 开启。
@@ -101,13 +114,13 @@ class Scroll extends Component {
     this.scroll && this.scroll.refresh()
   }
   @autobind
-  stop(){
+  stop() {
     // alert('stop')
     this.scroll && this.scroll.stop()
   }
-  
+
   @autobind
-  destroy(){
+  destroy() {
     this.scroll && this.scroll.destroy()
   }
   // @autobind
@@ -125,6 +138,12 @@ class Scroll extends Component {
   scrollToElement() {
     this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
   }
+
+  @autobind
+  finishPullUp(){
+    this.scroll && this.scroll.finishPullUp()
+  }
+  
 }
 
 export default Scroll

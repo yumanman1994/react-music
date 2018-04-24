@@ -20,7 +20,7 @@ class App extends Component {
           <Route path="/recommend" component={Recommend} />
           <Route path="/singer" component={Singer} />
           <Route path="/rank" component={Rank} />
-          <Route exact path="/search" component={Search} />
+          <Route  path="/search" component={Search} />
         </Switch>
         <Player />
         {/* <DevTools /> */}
