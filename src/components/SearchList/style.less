@@ -1,0 +1,20 @@
+@import '~common/style/variable';
+@import '~common/style/minxin';
+.search-list {
+  .search-item {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    .text {
+      flex: 1;
+      color: @color-text-l;
+    }
+    .icon {
+      .extend-click();
+      .icon-delete {
+        font-size: @font-size-small;
+        color: @color-text-d;
+      }
+    }
+  }
+}

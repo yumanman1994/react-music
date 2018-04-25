@@ -37,7 +37,8 @@ class Suggest extends Component {
     static propTypes = {
         query: PropTypes.string.isRequired,
         // // 是够能搜出歌手
-        showSinger: PropTypes.bool.isRequired
+        showSinger: PropTypes.bool.isRequired,
+        saveSearch:PropTypes.func.isRequired
     }
     constructor(props) {
         super(props)
@@ -117,6 +118,8 @@ class Suggest extends Component {
             // return
             this.props.inserSong(disInserSong(playList, sequenceList, currentIndex,item))
         }
+
+        this.props.saveSearch()
     }
 
     @autobind
