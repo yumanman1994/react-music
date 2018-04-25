@@ -8,6 +8,7 @@ import LoadMore from 'components/LoadMore'
 import { ERR_OK } from 'api/config'
 import { createSong } from 'common/js/song'
 import { moreState } from 'common/js/config'
+import {disInserSong} from 'common/js/util'
 import Singer from 'common/js/singer'
 import { getSearchResult } from 'api/search'
 import { processSongsUrl } from 'api/handlesongurl'
@@ -21,7 +22,10 @@ const perpage = 20
 @withRouter
 @inject(stores => ({
     setSinger: stores.singer.setSinger,
-    inserSong: stores.player.inserSong
+    inserSong: stores.player.inserSong,
+    playList: stores.player.playList,
+    sequenceList: stores.player.sequenceList,
+    currentIndex: stores.player.currentIndex,
 }))
 @observer
 class Suggest extends Component {
@@ -107,9 +111,11 @@ class Suggest extends Component {
 
         } else {
 
-            console.log(item)
+            // console.log(item)
+            let {playList, sequenceList, currentIndex} = this.props  
+
             // return
-            this.props.inserSong(item)
+            this.props.inserSong(disInserSong(playList, sequenceList, currentIndex,item))
         }
     }
 
