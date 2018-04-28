@@ -2,10 +2,11 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-25 00:36:11
+ * @Last Modified time: 2018-04-28 16:27:54
  */
 
 import React, { Component } from 'react'
+import Playlist from 'containers/Playlist'
 import ProgressBar from 'components/ProgressBar'
 import ProgressCircle from 'components/ProgressCircle'
 import LyricParse from 'lyric-parser'
@@ -53,7 +54,8 @@ class Player extends Component {
             currentLyricLineNum: 0,
             playingLyric: '',
             currentShow: 'cd',
-            notLyric: false
+            notLyric: false,
+            playlistShowFlag:false
 
         }
 
@@ -65,7 +67,7 @@ class Player extends Component {
 
     render() {
         let { fullScreen, playList, currentSong, playing, mode } = this.props
-        let { notLyric, currentShow, songReady, currentTime, percent, currentLyric, currentLyricLineNum, playingLyric } = this.state
+        let { notLyric,playlistShowFlag, currentShow, songReady, currentTime, percent, currentLyric, currentLyricLineNum, playingLyric } = this.state
         let normalShow = playList.length > 0 && fullScreen
         let miniShow = playList.length > 0 && !fullScreen
 
@@ -211,13 +213,14 @@ class Player extends Component {
 
 
                         </div>
-                        <div className="control">
+                        <div className="control" onClick={this.playlistShow} >
                             <i className="icon-playlist"></i>
 
                         </div>
 
                     </div>
                 </CSSTransition>
+                <Playlist showFlag={playlistShowFlag} playlistHide={this.playlistHide} />
                 <audio
                     ref={audio => { this.audio = audio }}
                     src={currentSong.url}
@@ -242,6 +245,9 @@ class Player extends Component {
 
     }
 
+
+    
+
     componentDidUpdate(prevProps, prevState) {
         let props = this.props
         this._watchPlayingChange(props.playing, prevProps.playing)
@@ -249,6 +255,26 @@ class Player extends Component {
 
 
 
+    }
+
+    @autobind
+    playlistShow(e){
+        // console.log(e)
+        e.stopPropagation()
+        e.nativeEvent.stopImmediatePropagation()
+        this.setState({
+            playlistShowFlag:true
+        })
+    }
+
+    @autobind
+    playlistHide(e){
+        e.stopPropagation()
+        e.nativeEvent.stopImmediatePropagation()
+        this.setState({
+            playlistShowFlag:false
+        })
+    
     }
 
 

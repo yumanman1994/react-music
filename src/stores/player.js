@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 19:29:58 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-25 13:28:38
+ * @Last Modified time: 2018-04-28 19:14:44
  * @Desc 播放
  */
 
@@ -99,7 +99,7 @@ class Player {
 
 
     @action.bound
-    inserSong({playList, sequenceList, currentIndex}) {
+    inserSong({ playList, sequenceList, currentIndex }) {
         // console.log(this.playList.slice())
         // return
         // let playList = this.playList.slice();
@@ -151,7 +151,52 @@ class Player {
     }
 
 
+
+    @action.bound
+    deleteSong(song) {
+        console.log(this.playList.slice())
+        let nowPlayList = this.playList.slice()
+        let nowSequenceList = this.sequenceList.slice()
+        let nowCurrentIndex = this.currentIndex
+
+        let pIndex = findIndex(nowPlayList, song)
+        nowPlayList.splice(pIndex, 1)
+
+        let sIndex = findIndex(nowSequenceList, song)
+        nowSequenceList.splice(sIndex, 1)
+
+        if (nowCurrentIndex > pIndex || nowCurrentIndex === nowSequenceList.length) {
+            nowCurrentIndex--
+        }
+
+        this.playList = nowPlayList
+        this.sequenceList = nowSequenceList
+        this.currentIndex = nowCurrentIndex
+        const playingState = nowPlayList.length > 0
+        this.playing = playingState
+
+    }
+
+    /**
+     * 删除播放列表全部歌曲
+     * 
+     * @memberof Player
+     */
+    @action.bound
+    deleteSongList() {
+        this.playList = []
+        this.sequenceList = []
+        this.currentIndex = -1
+        this.playing = false
+    }
+
+
 }
+
+
+
+
+
 
 // function 
 

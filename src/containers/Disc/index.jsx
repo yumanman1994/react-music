@@ -42,7 +42,6 @@ class Disc extends Component {
 
     /**
      * @description 获取歌手详情数据
-     *
      * @memberof SingerDetail
      */
     @autobind

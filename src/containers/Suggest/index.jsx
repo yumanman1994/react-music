@@ -8,7 +8,7 @@ import LoadMore from 'components/LoadMore'
 import { ERR_OK } from 'api/config'
 import { createSong } from 'common/js/song'
 import { moreState } from 'common/js/config'
-import {disInserSong} from 'common/js/util'
+import { disInserSong } from 'common/js/util'
 import Singer from 'common/js/singer'
 import { getSearchResult } from 'api/search'
 import { processSongsUrl } from 'api/handlesongurl'
@@ -38,7 +38,7 @@ class Suggest extends Component {
         query: PropTypes.string.isRequired,
         // // 是够能搜出歌手
         showSinger: PropTypes.bool.isRequired,
-        saveSearch:PropTypes.func.isRequired
+        saveSearch: PropTypes.func.isRequired
     }
     constructor(props) {
         super(props)
@@ -53,18 +53,21 @@ class Suggest extends Component {
             hasMore: true,
             pullUpLoad: {
                 threshold: 40
-              },
+            },
 
         }
 
     }
     render() {
-        let { query, hotKey, result ,pullUpLoad} = this.state
-        return <Scroll pullUpLoad={pullUpLoad} pullUpLoadFunc={this.searchMore} ref={suggest => { this.suggest = suggest }} className="suggest" refreshData={result}  >
+        let { query, hotKey, result, pullUpLoad } = this.state
+        return <Scroll
+            pullUpLoad={pullUpLoad}
+            pullUpLoadFunc={this.searchMore}
+            ref={suggest => { this.suggest = suggest }} className="suggest" refreshData={result}  >
             <div className="suggest-list-wrap" >
                 <ul className="suggest-list" >
                     {
-                        result.map((item, index) => <li onClick={() => {this.selectItem(item)}} className="suggest-item" key={index} >
+                        result.map((item, index) => <li onClick={() => { this.selectItem(item) }} className="suggest-item" key={index} >
                             <div className="icon" >
                                 <i className={this.getIconCls(item)} ></i>
                             </div>
@@ -77,9 +80,9 @@ class Suggest extends Component {
                     }
                 </ul>
                 {this.renderNoResult()}
-                <div className="load-more-wrap" style={{display:result.length ? '' : 'none'}} >
-                <LoadMore state={this.state.moreState} />
-            </div>
+                <div className="load-more-wrap" style={{ display: result.length ? '' : 'none' }} >
+                    <LoadMore state={this.state.moreState} />
+                </div>
 
             </div>
         </Scroll>
@@ -99,9 +102,15 @@ class Suggest extends Component {
         }
     }
 
+
+    @autobind
+    refresh() {
+        this.suggest.refresh()
+    }
+
     @autobind
     selectItem(item) {
-        
+
         if (item.type === TYPE_SINGER) {
             const singer = new Singer({
                 id: item.singermid,
@@ -113,10 +122,10 @@ class Suggest extends Component {
         } else {
 
             // console.log(item)
-            let {playList, sequenceList, currentIndex} = this.props  
+            let { playList, sequenceList, currentIndex } = this.props
 
             // return
-            this.props.inserSong(disInserSong(playList, sequenceList, currentIndex,item))
+            this.props.inserSong(disInserSong(playList, sequenceList, currentIndex, item))
         }
 
         this.props.saveSearch()
@@ -152,7 +161,7 @@ class Suggest extends Component {
         if (item.type === TYPE_SINGER) {
             return item.singername
         } else {
-           
+
             return `${item.name}-${item.singer}`
         }
     }
@@ -167,7 +176,7 @@ class Suggest extends Component {
 
     @autobind
     searchMore() {
-        console.log(this.state.hasMore,this.state.moreState)
+        console.log(this.state.hasMore, this.state.moreState)
         let { hasMore, page } = this.state
         if (!hasMore) {
             this.suggest.finishPullUp()
@@ -193,12 +202,12 @@ class Suggest extends Component {
                         }
                     }).finally(() => {
                         this.suggest.finishPullUp()
-                       
+
                     }).catch(() => {
                         this.suggest.finishPullUp()
                         this.setState({
                             page: this.state.page - 1,
-                           
+
                         })
                     })
             })
@@ -223,7 +232,7 @@ class Suggest extends Component {
                 .then(res => {
                     if (res.code === ERR_OK) {
                         this.checkMore(res.data)
-                       
+
                         let result = this._getResult(res.data)
                         this.setState({
                             result
@@ -249,12 +258,12 @@ class Suggest extends Component {
         ) {
             this.setState({
                 hasMore: false,
-                moreState:moreState.noMore
+                moreState: moreState.noMore
             })
-        }else{
+        } else {
             this.setState({
-               
-                moreState:moreState.hasMore
+
+                moreState: moreState.hasMore
             })
         }
     }

@@ -70,7 +70,7 @@ class Rank extends Component {
 
   componentDidUpdate(prevProps,prevState){
     if(prevProps.playList.length !== this.props.playList.length){
-      if(this.toplist){
+      if(this.state.toplist){
         this.toplist.refresh()
       }
       
