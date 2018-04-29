@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-27 22:01:45 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-29 10:39:10
+ * @Last Modified time: 2018-04-29 23:44:15
  */
 
 
@@ -13,11 +13,12 @@ import PropTypes from 'prop-types'
 import Scroll from 'components/Scroll'
 import { playMode } from 'common/js/config'
 import { autobind } from 'core-decorators'
-import { CSSTransition } from 'react-transition-group'
+import { CSSTransition, TransitionGroup } from 'react-transition-group'
 import { NavLink } from 'react-router-dom'
 import Confirm from 'components/Confirm'
 
 import './style.less'
+import Transition from 'react-transition-group/Transition';
 
 @inject(stores => ({
     sequenceList: stores.player.sequenceList,
@@ -75,27 +76,34 @@ class Playlist extends Component {
                             </h1>
                         </div>
 
-                        <Scroll ref={listContent =>{this.listContent = listContent}} className="list-content" refreshData={sequenceList} >
-                            <ul>
+                        <Scroll ref={listContent => { this.listContent = listContent }} className="list-content" refreshData={sequenceList} >
+                            <TransitionGroup component="ul" >
                                 {
                                     sequenceList.map((item, index) =>
-                                        <li className="item"
-                                            key={item.id}
-                                            onClick={() => { this.selectItem(item, index) }}
-                                            ref={songItem => { songItem && !this.songItems[index] && this.songItems.push(songItem) }}
+                                        <CSSTransition
+                                        key={item.id}
+                                        timeout={300}
+                                        classNames="item-fade"
                                         >
-                                            <i className={`current ${item.id === currentSong.id ? 'icon-play' : ''}`}  ></i>
-                                            <span className="text">{item.name}</span>
-                                            <span className="like">
-                                                <i className="icon-not-favorite"></i>
-                                            </span>
-                                            <span className="delete" onClick={(e) => { this.deleteSong(e, item) }} >
-                                                <i className="icon-delete"></i>
-                                            </span>
-                                        </li>)
+                                            <li className="item"
+                                                key={item.id}
+                                                onClick={() => { this.selectItem(item, index) }}
+                                                ref={songItem => { songItem && !this.songItems[index] && this.songItems.push(songItem) }}
+                                            >
+                                                <i className={`current ${item.id === currentSong.id ? 'icon-play' : ''}`}  ></i>
+                                                <span className="text">{item.name}</span>
+                                                <span className="like">
+                                                    <i className="icon-not-favorite"></i>
+                                                </span>
+                                                <span className="delete" onClick={(e) => { this.deleteSong(e, item) }} >
+                                                    <i className="icon-delete"></i>
+                                                </span>
+                                            </li>
+                                        </CSSTransition>
+                                    )
                                 }
 
-                            </ul>
+                            </TransitionGroup>
                         </Scroll>
                         <div className="list-operate">
                             <div className="add">
@@ -126,7 +134,7 @@ class Playlist extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         // console.log('cpmponentsDidUpdata')
-        if(this.props.playList.length <=0){
+        if (this.props.playList.length <= 0) {
             this.props.playlistHide()
         }
         this._watchCurrentSong(this.props, prevProps)
@@ -166,7 +174,7 @@ class Playlist extends Component {
 
         // console.log(this.props.playList.length)
 
-        
+
     }
 
     @autobind
@@ -203,7 +211,7 @@ class Playlist extends Component {
 
         console.log(index, '----------------$$$$$-------------------')
 
-        
+
         // console.log(this.listContent)
         this.listContent.scrollToElement(this.songItems[index], 300)
 
@@ -233,7 +241,7 @@ class Playlist extends Component {
             setTimeout(() => {
                 this.scrollToCurrent(this.props.currentSong)
             }, 20);
-            
+
         }
     }
 
