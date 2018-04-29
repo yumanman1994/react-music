@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-25 22:28:03 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-25 23:29:04
+ * @Last Modified time: 2018-04-29 10:44:04
  */
 
 
@@ -24,7 +24,7 @@ class SearchList extends Component {
 
     render() {
         let { searches } = this.props
-        console.log(searches,'SearchList')
+        // console.log(searches,'SearchList')
         return (
             <div className="search-list">
                 <ul>

@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-27 22:01:45 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-28 20:16:08
+ * @Last Modified time: 2018-04-29 10:39:10
  */
 
 
@@ -49,6 +49,8 @@ class Playlist extends Component {
     constructor(props) {
         super(props)
 
+        this.songItems = []
+
     }
     render() {
         let { showFlag, playlistHide, sequenceList, currentSong } = this.props
@@ -67,17 +69,21 @@ class Playlist extends Component {
                             <h1 className="title"  >
                                 <i className="icon"  ></i>
                                 <span className="text"></span>
-                                <span className="clear" onClick={this.confirmShow()} >
+                                <span className="clear" onClick={this.confirmShow} >
                                     <i className="icon-clear" ></i>
                                 </span>
                             </h1>
                         </div>
 
-                        <Scroll className="list-content" refreshData={sequenceList} >
+                        <Scroll ref={listContent =>{this.listContent = listContent}} className="list-content" refreshData={sequenceList} >
                             <ul>
                                 {
                                     sequenceList.map((item, index) =>
-                                        <li className="item" key={item.id} onClick={() => { this.selectItem(item, index) }} >
+                                        <li className="item"
+                                            key={item.id}
+                                            onClick={() => { this.selectItem(item, index) }}
+                                            ref={songItem => { songItem && !this.songItems[index] && this.songItems.push(songItem) }}
+                                        >
                                             <i className={`current ${item.id === currentSong.id ? 'icon-play' : ''}`}  ></i>
                                             <span className="text">{item.name}</span>
                                             <span className="like">
@@ -103,7 +109,7 @@ class Playlist extends Component {
 
 
                     </div>
-                    <Confirm ref={confirm => {this.confirm = confirm}} confirm ={this.deleteSongList} text="是否清空播放列表" />
+                    <Confirm ref={confirm => { this.confirm = confirm }} confirm={this.deleteSongList} text="是否清空播放列表" />
 
                 </div>
             </CSSTransition>
@@ -114,21 +120,34 @@ class Playlist extends Component {
         )
     }
 
-    // componentDidUpdate(prevProps,prevState){
-    //     console.log('cpmponentsDidUpdata')
-    // }
+    componentDidMount() {
+
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // console.log('cpmponentsDidUpdata')
+        if(this.props.playList.length <=0){
+            this.props.playlistHide()
+        }
+        this._watchCurrentSong(this.props, prevProps)
+        this._watchShowFlag(this.props, prevProps)
+    }
 
 
 
     @autobind
-    confirmShow(){
-        // this.confirm.show()
-        console.log(this.confirm)
+    confirmShow() {
+        this.confirm.show()
+
+
+        // this.scrollToCurrent(this.props.currentSong)
+        // console.log(this.confirm)
     }
 
     @autobind
-    deleteSongList(){
+    deleteSongList() {
         this.props.deleteSongList()
+        this.props.playlistHide()
     }
 
     @autobind
@@ -144,6 +163,10 @@ class Playlist extends Component {
         e.stopPropagation()
         e.nativeEvent.stopImmediatePropagation()
         this.props.deleteSong(song)
+
+        // console.log(this.props.playList.length)
+
+        
     }
 
     @autobind
@@ -165,13 +188,55 @@ class Playlist extends Component {
             })
         }
 
-        // console.log(playList)
-
         this.props.setCurrentIndex(index)
         this.props.setPlaying(true)
 
 
     }
+
+    @autobind
+    scrollToCurrent(current) {
+
+        const index = this.props.sequenceList.findIndex(song => {
+            return song.id === current.id
+        })
+
+        console.log(index, '----------------$$$$$-------------------')
+
+        
+        // console.log(this.listContent)
+        this.listContent.scrollToElement(this.songItems[index], 300)
+
+
+
+    }
+
+
+    @autobind
+    _watchCurrentSong(newProps, prevProps) {
+        // let newFlag = newProps.showFlag
+        let newSong = newProps.currentSong
+        let oldSong = prevProps.currentSong
+        if (!this.props.showFlag || newSong.id === oldSong.id) {
+            return
+        }
+
+        this.scrollToCurrent(newSong)
+
+    }
+
+
+    @autobind
+    _watchShowFlag(newProps, prevProps) {
+        let newFlag = newProps.showFlag
+        if (newFlag) {
+            setTimeout(() => {
+                this.scrollToCurrent(this.props.currentSong)
+            }, 20);
+            
+        }
+    }
+
 
 }
 

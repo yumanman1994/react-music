@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-28 16:27:54
+ * @Last Modified time: 2018-04-29 10:40:04
  */
 
 import React, { Component } from 'react'
@@ -269,8 +269,11 @@ class Player extends Component {
 
     @autobind
     playlistHide(e){
-        e.stopPropagation()
-        e.nativeEvent.stopImmediatePropagation()
+        if(e){
+            e.stopPropagation()
+            e.nativeEvent.stopImmediatePropagation()
+        }
+       
         this.setState({
             playlistShowFlag:false
         })
@@ -770,6 +773,10 @@ class Player extends Component {
      */
     @autobind
     _watchCurrentSong(newSong, oldSong) {
+
+        if(!newSong.id){
+            return
+        }
         if (newSong.id === oldSong.id) {
             return
         }

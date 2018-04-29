@@ -23,7 +23,7 @@ app.get('/api/getDiscList', function (req, res) {
       res.json(response.data)
     })
     .catch(e => {
-      console.log(e)
+      // console.log(e)
     })
 })
 

@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:47:19 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-23 01:32:12
+ * @Last Modified time: 2018-04-29 10:44:11
  */
 
 import React, { Component } from 'react'
@@ -139,7 +139,7 @@ class MusicList extends Component {
     let zIndex = 0
     let scale = 1
       let blur = 0
-    console.log(newScrollY)
+    // console.log(newScrollY)
     let translateY = Math.max(this.minTranlateY, newScrollY)
     this.layer.style[transform] = `translate3d(0,${translateY}px,0)`
     const percent = Math.abs(newScrollY / this.imageHeight)

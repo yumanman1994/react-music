@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-01 23:44:54 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-22 16:43:31
+ * @Last Modified time: 2018-04-29 10:44:08
  */
 
 import React, { Component } from 'react'
@@ -67,7 +67,7 @@ class Slider extends Component {
       this._play()
     }
     window.addEventListener('resize', () => {
-      console.log('resize------')
+      // console.log('resize------')
       if (!this.slider) {
         return
       }
