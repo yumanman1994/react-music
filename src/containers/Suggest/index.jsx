@@ -94,7 +94,6 @@ class Suggest extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log(prevProps)
         let prevQuery = prevProps.query
         let nowQuery = this.props.query
         if ((prevQuery !== nowQuery) && nowQuery) {

@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-22 01:56:16 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-22 15:33:13
+ * @Last Modified time: 2018-06-27 22:29:32
  */
 
 
@@ -67,10 +67,10 @@ class Lyric extends Component {
     }
 
     componentDidMount() {
-        console.log('componentDidMount', this.props)
+        
         let { currentLyricLineNum } = this.props
         if (currentLyricLineNum > 5) {
-            console.log(5)
+           
             let lineEl = this.lyricLines[currentLyricLineNum - 5]
             // console.log(lineEl,curr)
             setTimeout(() => {
@@ -82,7 +82,7 @@ class Lyric extends Component {
                 this.lyricList.scrollTo(0, 0, 0)
             }, 20);
 
-            console.log(0)
+           
 
         }
 
@@ -90,7 +90,6 @@ class Lyric extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log('componentDidUpdate')
         let props = this.props
         if (props.currentLyricLineNum !== prevProps.currentLyricLineNum) {
             let { currentLyricLineNum } = props
@@ -123,7 +122,7 @@ class Lyric extends Component {
 
         if (nextProps.currentLyric === null || nextProps.currentLyric !== this.props.currentLyric) {
             // console.log(nextProps.currentLyric)
-            console.log('first')
+          
             return true
         }
 

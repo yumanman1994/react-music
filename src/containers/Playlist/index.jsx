@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-27 22:01:45 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-29 23:44:15
+ * @Last Modified time: 2018-06-28 00:55:10
  */
 
 
@@ -14,11 +14,10 @@ import Scroll from 'components/Scroll'
 import { playMode } from 'common/js/config'
 import { autobind } from 'core-decorators'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
-import { NavLink } from 'react-router-dom'
+
 import Confirm from 'components/Confirm'
 
 import './style.less'
-import Transition from 'react-transition-group/Transition';
 
 @inject(stores => ({
     sequenceList: stores.player.sequenceList,
@@ -50,8 +49,6 @@ class Playlist extends Component {
     constructor(props) {
         super(props)
 
-        this.songItems = []
-
     }
     render() {
         let { showFlag, playlistHide, sequenceList, currentSong } = this.props
@@ -81,14 +78,13 @@ class Playlist extends Component {
                                 {
                                     sequenceList.map((item, index) =>
                                         <CSSTransition
-                                        key={item.id}
-                                        timeout={300}
-                                        classNames="item-fade"
+                                            key={item.id}
+                                            timeout={300}
+                                            classNames="item-fade"
                                         >
                                             <li className="item"
                                                 key={item.id}
                                                 onClick={() => { this.selectItem(item, index) }}
-                                                ref={songItem => { songItem && !this.songItems[index] && this.songItems.push(songItem) }}
                                             >
                                                 <i className={`current ${item.id === currentSong.id ? 'icon-play' : ''}`}  ></i>
                                                 <span className="text">{item.name}</span>
@@ -142,22 +138,35 @@ class Playlist extends Component {
     }
 
 
-
+    /**
+     * @description 唤起删除全部歌曲确认框
+     *
+     * @memberof Playlist
+     */
     @autobind
     confirmShow() {
         this.confirm.show()
-
-
-        // this.scrollToCurrent(this.props.currentSong)
-        // console.log(this.confirm)
     }
 
+
+    /**
+     * @description 删除播放列表的全部歌曲
+     *
+     * @memberof Playlist
+     */
     @autobind
     deleteSongList() {
         this.props.deleteSongList()
         this.props.playlistHide()
     }
 
+    
+    /**
+     * @description 关闭删除列表
+     *
+     * @param {*} e
+     * @memberof Playlist
+     */
     @autobind
     playlistHide(e) {
         e.stopPropagation()
@@ -166,63 +175,78 @@ class Playlist extends Component {
 
     }
 
+    /**
+     * @description 删除播放列表的一首歌曲
+     * @param {*} e 
+     * @param {*} song 
+     */
     @autobind
     deleteSong(e, song) {
         e.stopPropagation()
         e.nativeEvent.stopImmediatePropagation()
         this.props.deleteSong(song)
-
-        // console.log(this.props.playList.length)
-
-
     }
 
+
+    /**
+     * 阻止事件冒泡
+     * @param {*} e 
+     */
     @autobind
     handleStopPt(e) {
         e.stopPropagation()
         e.nativeEvent.stopImmediatePropagation()
     }
 
+    
     @autobind
     selectItem(item, index) {
-
-        // console.log(item,index)
-        // return 
         let playList = this.props.playList.slice()
         let { mode } = this.props
+        
+        // console.log(mode,index,item);
+        
+        
         if (mode === playMode.random) {
+            // console.log('random');
+            console.log(playList);
+            
+            
             index = playList.findIndex(song => {
-                return song.id = item.id
+                return song.id === item.id
             })
-        }
+        }                
 
+        // console.log(index);
+        
         this.props.setCurrentIndex(index)
         this.props.setPlaying(true)
 
 
     }
 
+    /**
+     * 播放列表的歌曲发生变化的时候 滚动播放列表到高亮的位置
+     * @param {*} current 
+     */
     @autobind
     scrollToCurrent(current) {
-
+        
         const index = this.props.sequenceList.findIndex(song => {
             return song.id === current.id
         })
 
-        console.log(index, '----------------$$$$$-------------------')
-
-
-        // console.log(this.listContent)
-        this.listContent.scrollToElement(this.songItems[index], 300)
-
-
-
+        console.log(this.listContent);
+        
+        // this.listContent.scrollToElement(this.songItems[index], 300)
+        this.listContent.scrollTo(0,index* -40,300)
     }
 
 
     @autobind
     _watchCurrentSong(newProps, prevProps) {
-        // let newFlag = newProps.showFlag
+        // console.log('_watchCurrentSong被触发');
+        
         let newSong = newProps.currentSong
         let oldSong = prevProps.currentSong
         if (!this.props.showFlag || newSong.id === oldSong.id) {
@@ -234,21 +258,23 @@ class Playlist extends Component {
     }
 
 
+    
     @autobind
     _watchShowFlag(newProps, prevProps) {
+        // console.log('_watchShowFlag 被触发');
+        
         let newFlag = newProps.showFlag
         if (newFlag) {
             setTimeout(() => {
+                console.log(this.props.currentSong,'watchShowFlag');
+                
                 this.scrollToCurrent(this.props.currentSong)
-            }, 20);
+            }, 200);
 
         }
     }
 
 
 }
-
-
-
 
 export default Playlist

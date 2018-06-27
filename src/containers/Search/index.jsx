@@ -35,7 +35,6 @@ class Search extends Component {
     let { query, hotKey } = this.state
     let searchHistory = this.props.searchHistory.slice()
     let playList = this.props.playList.slice()
-    console.log(searchHistory.slice(), '------------')
     return <div className="search" >
       <div className="search-box-wrapper" >
         <SearchBox query={query} setStateQuery={this.setStateQuery} />
@@ -130,7 +129,6 @@ class Search extends Component {
 
   @autobind
   setStateQuery(query) {
-    console.log(query)
     this.setState({
       query
     }, () => {

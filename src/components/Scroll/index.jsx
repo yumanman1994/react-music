@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:47:58 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-29 10:43:58
+ * @Last Modified time: 2018-06-27 23:17:49
  */
 
 import React, { PureComponent, Component } from 'react'
@@ -137,7 +137,8 @@ class Scroll extends Component {
   @autobind
   scrollToElement() {
 
-
+    console.log(arguments);
+    
     // console.log('scrollToElement')
     this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
   }

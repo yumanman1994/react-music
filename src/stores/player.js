@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 19:29:58 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-28 19:14:44
+ * @Last Modified time: 2018-06-27 22:29:53
  * @Desc 播放
  */
 
@@ -154,7 +154,6 @@ class Player {
 
     @action.bound
     deleteSong(song) {
-        console.log(this.playList.slice())
         let nowPlayList = this.playList.slice()
         let nowSequenceList = this.sequenceList.slice()
         let nowCurrentIndex = this.currentIndex

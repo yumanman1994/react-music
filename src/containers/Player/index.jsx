@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-29 10:40:04
+ * @Last Modified time: 2018-06-27 23:18:28
  */
 
 import React, { Component } from 'react'
@@ -460,7 +460,7 @@ class Player extends Component {
      */
     @autobind
     onTimeUpdate(e) {
-        console.log('onTimeUpdate')
+        // console.log('onTimeUpdate')
         this.setState({
             currentTime: e.target.currentTime,
             percent: e.target.currentTime / this.props.currentSong.duration
