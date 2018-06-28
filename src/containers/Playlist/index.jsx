@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-27 22:01:45 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-28 20:58:13
+ * @Last Modified time: 2018-06-29 00:27:33
  */
 
 
@@ -16,6 +16,8 @@ import { autobind } from 'core-decorators'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
 import PlayMode from 'containers/PlayMode'
+import AddSong from 'containers/AddSong'
+
 import Confirm from 'components/Confirm'
 
 import './style.less'
@@ -49,6 +51,9 @@ class Playlist extends Component {
 
     constructor(props) {
         super(props)
+        this.state ={
+            addSongShowFlag: false
+        }
 
     }
     render() {
@@ -105,7 +110,7 @@ class Playlist extends Component {
                             </TransitionGroup>
                         </Scroll>
                         <div className="list-operate">
-                            <div className="add">
+                            <div className="add" onClick={this.showAddSong}>
                                 <i className="icon-add"></i>
                                 <span className="text">添加歌曲到队列</span>
                             </div>
@@ -116,6 +121,7 @@ class Playlist extends Component {
 
 
                     </div>
+                    <AddSong showFlag={this.state.addSongShowFlag} hideAddSong={this.hideAddSong} />
                     <Confirm ref={confirm => { this.confirm = confirm }} confirm={this.deleteSongList} text="是否清空播放列表" />
 
                 </div>
@@ -131,6 +137,11 @@ class Playlist extends Component {
 
     }
 
+
+    
+
+
+
     componentDidUpdate(prevProps, prevState) {
         // console.log('cpmponentsDidUpdata')
         if (this.props.playList.length <= 0) {
@@ -138,6 +149,20 @@ class Playlist extends Component {
         }
         this._watchCurrentSong(this.props, prevProps)
         this._watchShowFlag(this.props, prevProps)
+    }
+
+    @autobind
+    showAddSong(){
+        this.setState({
+            addSongShowFlag:true
+        })
+    }
+
+    @autobind
+    hideAddSong(){
+        this.setState({
+            addSongShowFlag:false
+        })
     }
 
 
