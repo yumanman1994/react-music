@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-20 16:02:01 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-25 12:03:59
+ * @Last Modified time: 2018-06-28 21:03:26
  * @Desc 工具函数
  */
 
@@ -51,6 +51,16 @@ export function debounce(func, delay) {
 }
 
 
+/**
+ * @description 插入歌曲时 获取新的播放列表 和播放索引
+ *
+ * @export
+ * @param {*} playList
+ * @param {*} sequenceList
+ * @param {*} currentIndex
+ * @param {*} song
+ * @returns
+ */
 export function disInserSong(playList, sequenceList, currentIndex,song) {
   playList = playList.slice();
   sequenceList = sequenceList.slice();

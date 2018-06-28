@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 19:29:58 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-27 22:29:53
+ * @Last Modified time: 2018-06-28 21:05:30
  * @Desc 播放
  */
 
@@ -65,6 +65,12 @@ class Player {
         this.currentIndex = index
     }
 
+    /**
+     * @description 选择一首歌曲播放
+     *
+     * @param {*} { list, index }
+     * @memberof Player
+     */
     @action.bound
     selectPlay({ list, index }) {
         // console.log(this.fullScreen)
@@ -86,6 +92,12 @@ class Player {
         // console.log( this.playList)
     }
 
+    /**
+     * @description 随机播放
+     *
+     * @param {*} { list }
+     * @memberof Player
+     */
     @action.bound
     randomPlay({ list }) {
         this.mode = playMode.random,
@@ -98,6 +110,12 @@ class Player {
     }
 
 
+    /**
+     * 播放列表中插入歌曲
+     *
+     * @param {*} { playList, sequenceList, currentIndex }
+     * @memberof Player
+     */
     @action.bound
     inserSong({ playList, sequenceList, currentIndex }) {
         // console.log(this.playList.slice())
@@ -152,6 +170,12 @@ class Player {
 
 
 
+    /**
+     * @description 播放列表 中删除一首歌曲
+     *
+     * @param {*} song
+     * @memberof Player
+     */
     @action.bound
     deleteSong(song) {
         let nowPlayList = this.playList.slice()

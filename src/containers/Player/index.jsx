@@ -2,18 +2,19 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-27 23:18:28
+ * @Last Modified time: 2018-06-28 21:17:54
  */
 
 import React, { Component } from 'react'
 import Playlist from 'containers/Playlist'
+import PlayMode from 'containers/PlayMode'
 import ProgressBar from 'components/ProgressBar'
 import ProgressCircle from 'components/ProgressCircle'
+
 import LyricParse from 'lyric-parser'
 import { CSSTransition } from 'react-transition-group'
 import animations from 'create-keyframe-animation'
 import { autobind } from 'core-decorators'
-import Scroll from 'components/Scroll'
 import Lyric from './subPage/Lyric'
 import { observer, inject } from 'mobx-react'
 import { prefixStyle } from 'common/js/dom'
@@ -168,7 +169,7 @@ class Player extends Component {
 
                             <div className="operators">
                                 <div className="icon i-left">
-                                    <i className={playModeCls} onClick={this.changeMode} ></i>
+                                    <PlayMode/>
                                 </div>
                                 <div className={`icon i-left ${(songReady && currentLyric) ? '' : 'disable'}`}>
                                     <i className={`icon-prev`} onClick={this.handlePrev} ></i>
@@ -416,43 +417,43 @@ class Player extends Component {
     /**
      * 切换歌曲播放的模式
      */
-    @autobind
-    changeMode() {
+    // @autobind
+    // changeMode() {
 
-        let mode = (this.props.mode + 1) % 3
-        // console.log(mode)
-        this.props.setPlayMode(mode)
+    //     let mode = (this.props.mode + 1) % 3
+    //     // console.log(mode)
+    //     this.props.setPlayMode(mode)
 
-        let list = null
+    //     let list = null
 
-        if (mode === playMode.random) {
-            list = shuffle(this.props.sequenceList)
-            // console.log(this.props.sequenceList)
-        } else {
-            // console.log(this.props.sequenceList.slice())
-            list = this.props.sequenceList.slice()
-        }
+    //     if (mode === playMode.random) {
+    //         list = shuffle(this.props.sequenceList)
+    //         // console.log(this.props.sequenceList)
+    //     } else {
+    //         // console.log(this.props.sequenceList.slice())
+    //         list = this.props.sequenceList.slice()
+    //     }
 
-        this.resetCurrentIndex(list)
-        this.props.setPlayList(list)
+    //     this.resetCurrentIndex(list)
+    //     this.props.setPlayList(list)
 
 
-    }
+    // }
 
     /**
      * @description 顺序切换为随机播放的时候 播放列表改变 获得正确的当前播放的索引
      * @param {*Array} list 
      */
-    @autobind
-    resetCurrentIndex(list) {
+    // @autobind
+    // resetCurrentIndex(list) {
 
-        let index = list.findIndex(item => {
-            return item.id === this.props.currentSong.id
-        })
-        // console.log(index)
-        this.props.setCurrentIndex(index)
+    //     let index = list.findIndex(item => {
+    //         return item.id === this.props.currentSong.id
+    //     })
+    //     // console.log(index)
+    //     this.props.setCurrentIndex(index)
 
-    }
+    // }
 
     /**
      * @description audio 播放时候的监听 取得当前播放的时间 和计算播放的比例

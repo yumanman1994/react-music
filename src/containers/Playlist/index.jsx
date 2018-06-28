@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-27 22:01:45 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-28 00:55:10
+ * @Last Modified time: 2018-06-28 20:58:13
  */
 
 
@@ -15,6 +15,7 @@ import { playMode } from 'common/js/config'
 import { autobind } from 'core-decorators'
 import { CSSTransition, TransitionGroup } from 'react-transition-group'
 
+import PlayMode from 'containers/PlayMode'
 import Confirm from 'components/Confirm'
 
 import './style.less'
@@ -51,7 +52,8 @@ class Playlist extends Component {
 
     }
     render() {
-        let { showFlag, playlistHide, sequenceList, currentSong } = this.props
+        let { showFlag, playlistHide, sequenceList, currentSong, mode } = this.props
+
         return (
             // <div className="playlist-wrap" >
             <CSSTransition
@@ -65,11 +67,12 @@ class Playlist extends Component {
                     <div className="list-wrapper" onClick={this.handleStopPt} >
                         <div className="list-header">
                             <h1 className="title"  >
-                                <i className="icon"  ></i>
-                                <span className="text"></span>
-                                <span className="clear" onClick={this.confirmShow} >
+                                <PlayMode style={2}
+                                />
+                                    <span className="clear" onClick={this.confirmShow} >
                                     <i className="icon-clear" ></i>
                                 </span>
+
                             </h1>
                         </div>
 
@@ -160,7 +163,7 @@ class Playlist extends Component {
         this.props.playlistHide()
     }
 
-    
+
     /**
      * @description 关闭删除列表
      *
@@ -198,27 +201,27 @@ class Playlist extends Component {
         e.nativeEvent.stopImmediatePropagation()
     }
 
-    
+
     @autobind
     selectItem(item, index) {
         let playList = this.props.playList.slice()
         let { mode } = this.props
-        
+
         // console.log(mode,index,item);
-        
-        
+
+
         if (mode === playMode.random) {
             // console.log('random');
             console.log(playList);
-            
-            
+
+
             index = playList.findIndex(song => {
                 return song.id === item.id
             })
-        }                
+        }
 
         // console.log(index);
-        
+
         this.props.setCurrentIndex(index)
         this.props.setPlaying(true)
 
@@ -231,22 +234,22 @@ class Playlist extends Component {
      */
     @autobind
     scrollToCurrent(current) {
-        
+
         const index = this.props.sequenceList.findIndex(song => {
             return song.id === current.id
         })
 
         console.log(this.listContent);
-        
+
         // this.listContent.scrollToElement(this.songItems[index], 300)
-        this.listContent.scrollTo(0,index* -40,300)
+        this.listContent.scrollTo(0, index * -40, 300)
     }
 
 
     @autobind
     _watchCurrentSong(newProps, prevProps) {
         // console.log('_watchCurrentSong被触发');
-        
+
         let newSong = newProps.currentSong
         let oldSong = prevProps.currentSong
         if (!this.props.showFlag || newSong.id === oldSong.id) {
@@ -258,16 +261,16 @@ class Playlist extends Component {
     }
 
 
-    
+
     @autobind
     _watchShowFlag(newProps, prevProps) {
         // console.log('_watchShowFlag 被触发');
-        
+
         let newFlag = newProps.showFlag
         if (newFlag) {
             setTimeout(() => {
-                console.log(this.props.currentSong,'watchShowFlag');
-                
+                console.log(this.props.currentSong, 'watchShowFlag');
+
                 this.scrollToCurrent(this.props.currentSong)
             }, 200);
 
