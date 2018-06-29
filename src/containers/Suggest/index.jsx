@@ -122,6 +122,7 @@ class Suggest extends Component {
 
             // console.log(item)
             let { playList, sequenceList, currentIndex } = this.props
+// console.log(item);
 
             // return
             this.props.inserSong(disInserSong(playList, sequenceList, currentIndex, item))

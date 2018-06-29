@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-28 21:17:54
+ * @Last Modified time: 2018-06-29 22:48:08
  */
 
 import React, { Component } from 'react'
@@ -37,7 +37,9 @@ const transitionDuration = prefixStyle('transitionDuration')
     mode: stores.player.mode,
     setPlayMode: stores.player.setPlayMode,
     sequenceList: stores.player.sequenceList,
-    setPlayList: stores.player.setPlayList
+    setPlayList: stores.player.setPlayList,
+    savePlayHistory: stores.storage.savePlayHistory,
+
 }))
 @observer
 class Player extends Component {
@@ -56,7 +58,7 @@ class Player extends Component {
             playingLyric: '',
             currentShow: 'cd',
             notLyric: false,
-            playlistShowFlag:false
+            playlistShowFlag: false
 
         }
 
@@ -68,7 +70,7 @@ class Player extends Component {
 
     render() {
         let { fullScreen, playList, currentSong, playing, mode } = this.props
-        let { notLyric,playlistShowFlag, currentShow, songReady, currentTime, percent, currentLyric, currentLyricLineNum, playingLyric } = this.state
+        let { notLyric, playlistShowFlag, currentShow, songReady, currentTime, percent, currentLyric, currentLyricLineNum, playingLyric } = this.state
         let normalShow = playList.length > 0 && fullScreen
         let miniShow = playList.length > 0 && !fullScreen
 
@@ -169,7 +171,7 @@ class Player extends Component {
 
                             <div className="operators">
                                 <div className="icon i-left">
-                                    <PlayMode/>
+                                    <PlayMode />
                                 </div>
                                 <div className={`icon i-left ${(songReady && currentLyric) ? '' : 'disable'}`}>
                                     <i className={`icon-prev`} onClick={this.handlePrev} ></i>
@@ -247,7 +249,7 @@ class Player extends Component {
     }
 
 
-    
+
 
     componentDidUpdate(prevProps, prevState) {
         let props = this.props
@@ -259,26 +261,26 @@ class Player extends Component {
     }
 
     @autobind
-    playlistShow(e){
+    playlistShow(e) {
         // console.log(e)
         e.stopPropagation()
         e.nativeEvent.stopImmediatePropagation()
         this.setState({
-            playlistShowFlag:true
+            playlistShowFlag: true
         })
     }
 
     @autobind
-    playlistHide(e){
-        if(e){
+    playlistHide(e) {
+        if (e) {
             e.stopPropagation()
             e.nativeEvent.stopImmediatePropagation()
         }
-       
+
         this.setState({
-            playlistShowFlag:false
+            playlistShowFlag: false
         })
-    
+
     }
 
 
@@ -491,10 +493,10 @@ class Player extends Component {
 
     @autobind
     onSeeked() {
-        if( this.state.currentLyric){
+        if (this.state.currentLyric) {
             this.state.currentLyric.seek(this.props.currentSong.duration * this.state.percent * 1000)
         }
-        
+
     }
 
     /**
@@ -541,6 +543,11 @@ class Player extends Component {
         this.setState({
             songReady: true
         })
+
+        //  保存 播放记录
+        this.props.savePlayHistory(this.props.currentSong)
+
+
 
     }
 
@@ -734,10 +741,10 @@ class Player extends Component {
                 }, () => {
                     console.log(this.state.currentLyric)
 
-                   
+
                 })
-                 // 如果歌曲在播放 播放歌词
-                 if (this.props.playing) {
+                // 如果歌曲在播放 播放歌词
+                if (this.props.playing) {
                     this.state.currentLyric.play()
                 }
             }).catch(e => {
@@ -775,13 +782,13 @@ class Player extends Component {
     @autobind
     _watchCurrentSong(newSong, oldSong) {
 
-        if(!newSong.id){
+        if (!newSong.id) {
             return
         }
         if (newSong.id === oldSong.id) {
             return
         }
-        console.log('_watchCurrentSong----------------',this.state.currentLyric)
+        console.log('_watchCurrentSong----------------', this.state.currentLyric)
         if (this.state.currentLyric) {
             console.log('-------stop')
             this.state.currentLyric.stop()

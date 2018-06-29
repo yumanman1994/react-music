@@ -2,22 +2,36 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-06-28 23:31:45 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-29 01:44:22
+ * @Last Modified time: 2018-06-30 00:01:18
  */
 
 import React, { Component } from 'react'
-import { CSSTransition, TransitionGroup } from 'react-transition-group'
+import { CSSTransition } from 'react-transition-group'
 import SearchBox from 'components/SearchBox'
 import Swiches from 'components/Swiches'
-
+import Suggest from 'containers/Suggest'
+import Scroll from 'components/Scroll'
+import { observer, inject } from 'mobx-react'
 import { autobind } from 'core-decorators'
 import PropTypes from 'prop-types'
+import SongList from 'components/SongList'
+import { disInserSong } from 'common/js/util'
+
+import Song from 'common/js/song'
 
 
 import './style.less'
 
 
-
+@inject((stores) => ({
+    saveSearchHistory: stores.storage.saveSearchHistory,
+    playHistory: stores.storage.playHistory,
+    inserSong: stores.player.inserSong,
+    playList: stores.player.playList,
+    sequenceList: stores.player.sequenceList,
+    currentIndex: stores.player.currentIndex,
+}))
+@observer
 class AddSong extends Component {
     static defaultProps = {
         showFlag: false,
@@ -43,8 +57,11 @@ class AddSong extends Component {
 
     }
     render() {
-        let { query ,switches,currentIndex} = this.state
+        let { query, switches, currentIndex } = this.state
         let { showFlag } = this.props
+        let playHistory = this.props.playHistory.slice()
+        console.log(playHistory,'playHistory');
+        
 
         return (
             <CSSTransition
@@ -61,14 +78,26 @@ class AddSong extends Component {
                             <i className="icon-close" ></i>
                         </div>
 
-                        <div className="search-box-wrapper" >
-                            <SearchBox query={query} setStateQuery={this.setStateQuery} />
-                        </div>
 
-                        <div className="shortcut" >
-                            <Swiches currentIndex={currentIndex} setSwitchesIndex={this.setSwitchesIndex} switches={switches}/>
-                        </div>
+                    </div>
+                    <div className="search-box-wrapper" >
+                        <SearchBox query={query} setStateQuery={this.setStateQuery} />
+                    </div>
 
+                    <div className="shortcut" style={{ display: query ? 'none' : '' }} >
+                        <Swiches currentIndex={currentIndex} setSwitchesIndex={this.setSwitchesIndex} switches={switches} />
+                        <div className="add-song-list-wrapper" >
+                            <Scroll className="list-scroll" >
+                                <div className="list-inner" >
+                                    <SongList selectItem={this.selectSong} songs={playHistory} />
+                                </div>
+                            </Scroll>
+                        </div>
+                    </div>
+
+
+                    <div className="search-result" style={{ display: query ? '' : 'none' }} >
+                        <Suggest saveSearch={this.saveSearch} query={query} />
 
                     </div>
                 </div>
@@ -79,10 +108,27 @@ class AddSong extends Component {
     }
 
     @autobind
-    setSwitchesIndex(currentIndex){
+    selectSong(item, index) {
+        if (index !== 0) {
+            let { playList, sequenceList, currentIndex } = this.props
+            let song = new Song(item)
+            
+            
+            this.props.inserSong(disInserSong(playList, sequenceList, currentIndex, song))
+        }
+
+    }
+
+    @autobind
+    setSwitchesIndex(currentIndex) {
         this.setState({
             currentIndex
         })
+    }
+
+    @autobind
+    saveSearch() {
+        this.props.saveSearchHistory(this.state.query)
     }
 
 

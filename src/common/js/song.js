@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:14:47 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-04-21 21:08:50
+ * @Last Modified time: 2018-06-29 23:31:22
  * @desc 序列化一个歌曲的详情 得到我们想要的数据类型
  */
 
@@ -16,7 +16,7 @@ import { Base64 } from 'js-base64'
  * @description 一个歌曲对象 
  * @class Song
  */
-class Song {
+ export default class Song {
   constructor({ id, mid, singer, name, album, duration, image, url }) {
     this.id = id
     this.mid = mid

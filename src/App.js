@@ -23,7 +23,7 @@ class App extends Component {
           <Route  path="/search" component={Search} />
         </Switch>
         <Player />
-        {/* <DevTools /> */}
+        <DevTools />
       </div>
     )
   }
