@@ -1,0 +1,25 @@
+@import '~common/style/variable';
+.top-tip {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 500;
+    background: @color-dialog-background;
+    &.topTip-drop-enter {
+        transform: translate3d(0, -100%, 0)
+    }
+    &.topTip-drop-enter.topTip-drop-enter-active {
+        transition: all 0.3s;
+        transform: translate3d(0, 0, 0)
+    }
+    &.topTip-drop-exit {
+        transform: translate3d(0, 0, 0)
+    }
+    &.topTip-drop-exit.topTip-drop-exit-active {
+        transition: all 0.3s;
+        transform: translate3d(0, -100%, 0)
+    }
+
+
+    
+}

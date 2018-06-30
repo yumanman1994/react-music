@@ -65,7 +65,10 @@ class Search extends Component {
                       <i className="icon-clear" ></i>
                     </span>
                   </h1>
-                  <SearchList searches={searchHistory} deleteOne={this.deleteOne} select={this.setStateQuery} />
+                  <SearchList 
+                  searches={searchHistory} 
+                  deleteOne={this.deleteOne} 
+                  select={this.setStateQuery} />
 
                 </div>
                 : null

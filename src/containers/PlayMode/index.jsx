@@ -44,8 +44,8 @@ class PlayMode extends Component {
             return <i className={`icon ${iconMode}`} onClick={this.changeMode}   ></i>
         }
 
-        return [<i className={`icon ${iconMode}`} onClick={this.changeMode}  ></i>,
-        <span className="text">{modeText}</span>]
+        return [<i className={`icon ${iconMode}`} onClick={this.changeMode} key="icon"  ></i>,
+        <span className="text" key="text">{modeText}</span>]
 
 
         // [<i className={`icon`}  ></i>,

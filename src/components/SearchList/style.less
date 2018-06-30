@@ -1,20 +1,34 @@
 @import '~common/style/variable';
 @import '~common/style/minxin';
 .search-list {
-  .search-item {
-    display: flex;
-    align-items: center;
-    height: 40px;
-    .text {
-      flex: 1;
-      color: @color-text-l;
+    &.drop-enter {
+        height: 0;
     }
-    .icon {
-      .extend-click();
-      .icon-delete {
-        font-size: @font-size-small;
-        color: @color-text-d;
-      }
+    &.drop-enter-active {
+        
+        transition:all 100ms linear;
     }
-  }
+    &.drop-exit {
+        height: 0;
+    }
+    &.drop-exit-active {
+        
+        transition:all 100ms linear;
+    }
+    .search-item {
+        display: flex;
+        align-items: center;
+        height: 40px;
+        .text {
+            flex: 1;
+            color: @color-text-l;
+        }
+        .icon {
+            .extend-click();
+            .icon-delete {
+                font-size: @font-size-small;
+                color: @color-text-d;
+            }
+        }
+    }
 }

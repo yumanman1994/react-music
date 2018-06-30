@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-20 16:02:01 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-28 21:03:26
+ * @Last Modified time: 2018-06-30 17:25:28
  * @Desc 工具函数
  */
 
@@ -64,7 +64,7 @@ export function debounce(func, delay) {
 export function disInserSong(playList, sequenceList, currentIndex,song) {
   playList = playList.slice();
   sequenceList = sequenceList.slice();
-  currentIndex = currentIndex;
+
 
   let currentSong = playList[currentIndex]
 
@@ -80,6 +80,7 @@ export function disInserSong(playList, sequenceList, currentIndex,song) {
     // 如果这哥 存在 并且在 当前播放索引之前 
     if (currentIndex > fpIndex) {
       playList.splice(fpIndex, 1)
+      currentIndex--
     } else {
       playList.splice(fpIndex + 1, 1)
     }

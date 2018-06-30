@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-27 22:01:45 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-29 00:27:33
+ * @Last Modified time: 2018-06-30 17:45:52
  */
 
 
@@ -87,7 +87,7 @@ class Playlist extends Component {
                                     sequenceList.map((item, index) =>
                                         <CSSTransition
                                             key={item.id}
-                                            timeout={300}
+                                            timeout={100}
                                             classNames="item-fade"
                                         >
                                             <li className="item"

@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-11 22:47:58 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-27 23:17:49
+ * @Last Modified time: 2018-06-30 16:52:20
  */
 
 import React, { PureComponent, Component } from 'react'
@@ -61,6 +61,16 @@ class Scroll extends Component {
     // this.scroll && this.scroll.refresh()
 
   }
+
+    componentWillUnmount(){
+      if(this.scroll){
+        console.log('componentWillUnmount');
+        
+        this.scroll.stop()
+        this.scroll.destroy()
+      }
+
+    }
 
   @autobind
   _initScroll() {
