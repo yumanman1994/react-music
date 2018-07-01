@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-25 21:54:51 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-29 23:39:59
+ * @Last Modified time: 2018-07-01 18:39:25
  * @desc 缓存相关方法逻辑
  */
 
@@ -13,6 +13,9 @@ const SEARCH_KEY = '__search__'
 const SEARCH_MAX_LENGTH = 15
 const PLAY_KEY = 'PLAY_KEY'
 const PALY_MAX_LENGHT = 200
+
+const FAVORITE_KEY = '__favorite__'
+const FAVORITE_MAX_LEN = 200
 /**
  * @description 存储到 storage中
  * @param {*} query 
@@ -71,11 +74,11 @@ function insertArray(arr, val, compare, maxLen) {
  * @param {*} arr 
  * @param {*} compare 
  */
-function deleteFromArray(arr,compare){
+function deleteFromArray(arr, compare) {
     const index = arr.findIndex(compare)
-    if(index > -1){
-        arr.splice(index,1)
-    } 
+    if (index > -1) {
+        arr.splice(index, 1)
+    }
 
 }
 
@@ -83,8 +86,8 @@ function deleteFromArray(arr,compare){
  * @description 获取storage中搜索的存储
  * @returns 
  */
-export function loadSearch(){
-    return storage.get(SEARCH_KEY,[])
+export function loadSearch() {
+    return storage.get(SEARCH_KEY, [])
 }
 
 
@@ -94,14 +97,14 @@ export function loadSearch(){
  * @param {any} query 
  * @returns 
  */
-export function deleteSearch(query){
+export function deleteSearch(query) {
     let searches = loadSearch()
-    deleteFromArray(searches,(item) => {
+    deleteFromArray(searches, (item) => {
         return item = query
     })
     storage.set(SEARCH_KEY, searches)
     return searches
-    
+
 }
 
 
@@ -110,19 +113,19 @@ export function deleteSearch(query){
  * @export
  * @returns 
  */
-export function clearSearch(){
+export function clearSearch() {
     storage.remove(SEARCH_KEY)
     return []
 }
 
 
-export function savePlay(song){
-    let songs = storage.get(PLAY_KEY,[])
-    insertArray(songs,song,(item) => {
-      return  item.id === song.id
-    },PALY_MAX_LENGHT)
-    
-    storage.set(PLAY_KEY,songs)
+export function savePlay(song) {
+    let songs = storage.get(PLAY_KEY, [])
+    insertArray(songs, song, (item) => {
+        return item.id === song.id
+    }, PALY_MAX_LENGHT)
+
+    storage.set(PLAY_KEY, songs)
 
     return songs
 
@@ -133,5 +136,30 @@ export function savePlay(song){
 
 export function loadPlay() {
     return storage.get(PLAY_KEY, [])
-  }
+}
 
+
+
+export function loadFavoriteList() {
+    return storage.get(FAVORITE_KEY, [])
+}
+
+
+export function saveFavorite(song) {
+    let songs = storage.get(FAVORITE_KEY, [])
+    insertArray(songs, song, (item) => {
+        return item.id === song.id
+    }, FAVORITE_MAX_LEN)
+    storage.set(FAVORITE_KEY, songs)
+    return songs
+
+}
+
+export function deleteFavotite(song){
+    let songs = storage.get(FAVORITE_KEY, [])
+    deleteFromArray(songs,(item) => {
+        return item.id === song.id
+    })
+    storage.set(FAVORITE_KEY, songs)
+    return songs
+}

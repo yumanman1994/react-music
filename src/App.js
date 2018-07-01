@@ -7,6 +7,7 @@ import Recommend from 'containers/Recommend'
 import Search from 'containers/Search'
 import Singer from 'containers/Singer'
 import Player from 'containers/Player'
+import UserCenter from 'containers/UserCenter'
 
 import DevTools from 'mobx-react-devtools'
 class App extends Component {
@@ -21,9 +22,10 @@ class App extends Component {
           <Route path="/singer" component={Singer} />
           <Route path="/rank" component={Rank} />
           <Route  path="/search" component={Search} />
+          <Route path="/user" component={UserCenter}  ></Route>
         </Switch>
         <Player />
-        <DevTools />
+        {/* <DevTools /> */}
       </div>
     )
   }

@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-06-28 23:31:45 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-30 18:13:56
+ * @Last Modified time: 2018-07-01 21:45:24
  */
 
 import React, { Component } from 'react'
@@ -143,10 +143,6 @@ class AddSong extends Component {
         if (index !== 0) {
             let { playList, sequenceList, currentIndex } = this.props
             let song = new Song(item)
-
-            console.log(item, 'selectHistotyPlay');
-
-
             this.props.inserSong(disInserSong(playList, sequenceList, currentIndex, song))
             this.topTip.show()
         }

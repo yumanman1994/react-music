@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-27 22:01:45 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-30 17:45:52
+ * @Last Modified time: 2018-07-01 21:01:24
  */
 
 
@@ -19,7 +19,6 @@ import PlayMode from 'containers/PlayMode'
 import AddSong from 'containers/AddSong'
 
 import Confirm from 'components/Confirm'
-
 import './style.less'
 
 @inject(stores => ({
@@ -30,7 +29,8 @@ import './style.less'
     deleteSongList: stores.player.deleteSongList,
     mode: stores.player.mode,
     setCurrentIndex: stores.player.setCurrentIndex,
-    setPlaying: stores.player.setPlaying
+    setPlaying: stores.player.setPlaying,
+    favoriteList:stores.storage.favoriteList
 
 
 }))
@@ -57,7 +57,7 @@ class Playlist extends Component {
 
     }
     render() {
-        let { showFlag, playlistHide, sequenceList, currentSong, mode } = this.props
+        let { showFlag, sequenceList, currentSong } = this.props
 
         return (
             // <div className="playlist-wrap" >
@@ -97,7 +97,7 @@ class Playlist extends Component {
                                                 <i className={`current ${item.id === currentSong.id ? 'icon-play' : ''}`}  ></i>
                                                 <span className="text">{item.name}</span>
                                                 <span className="like">
-                                                    <i className="icon-not-favorite"></i>
+                                                    <i className={`${this.getFavotireIcon(item)}`}></i>
                                                 </span>
                                                 <span className="delete" onClick={(e) => { this.deleteSong(e, item) }} >
                                                     <i className="icon-delete"></i>
@@ -133,15 +133,6 @@ class Playlist extends Component {
         )
     }
 
-    componentDidMount() {
-
-    }
-
-
-    
-
-
-
     componentDidUpdate(prevProps, prevState) {
         // console.log('cpmponentsDidUpdata')
         if (this.props.playList.length <= 0) {
@@ -150,6 +141,24 @@ class Playlist extends Component {
         this._watchCurrentSong(this.props, prevProps)
         this._watchShowFlag(this.props, prevProps)
     }
+
+    @autobind
+    getFavotireIcon(song){
+        let list = this.props.favoriteList.slice()
+        if(this._isFavorite(song,list)){
+            return 'icon-favorite'
+        }
+        return 'icon-not-favorite'
+        
+    }
+
+    @autobind
+    _isFavorite(song,list){
+        let index = list.findIndex(item => item.id === song.id)
+        return index > -1
+        
+    }
+    
 
     @autobind
     showAddSong(){

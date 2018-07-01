@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-16 20:00:46 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-29 22:48:08
+ * @Last Modified time: 2018-07-01 21:03:15
  */
 
 import React, { Component } from 'react'
@@ -10,7 +10,6 @@ import Playlist from 'containers/Playlist'
 import PlayMode from 'containers/PlayMode'
 import ProgressBar from 'components/ProgressBar'
 import ProgressCircle from 'components/ProgressCircle'
-
 import LyricParse from 'lyric-parser'
 import { CSSTransition } from 'react-transition-group'
 import animations from 'create-keyframe-animation'
@@ -19,7 +18,6 @@ import Lyric from './subPage/Lyric'
 import { observer, inject } from 'mobx-react'
 import { prefixStyle } from 'common/js/dom'
 import { playMode } from 'common/js/config'
-import { shuffle } from 'common/js/util'
 
 import './style.less'
 const transform = prefixStyle('transform')
@@ -39,6 +37,9 @@ const transitionDuration = prefixStyle('transitionDuration')
     sequenceList: stores.player.sequenceList,
     setPlayList: stores.player.setPlayList,
     savePlayHistory: stores.storage.savePlayHistory,
+    favoriteList:stores.storage.favoriteList,
+    saveFavorite:stores.storage.saveFavorite,
+    deleteFavotite:stores.storage.deleteFavotite,
 
 }))
 @observer
@@ -182,8 +183,8 @@ class Player extends Component {
                                 <div className={`icon i-right  ${(songReady && currentLyric) ? '' : 'disable'}`}>
                                     <i className="icon-next" onClick={this.handleNext} ></i>
                                 </div>
-                                <div className="icon i-right">
-                                    <i className="icon icon-not-favorite"></i>
+                                <div className="icon i-right" onClick={() => {this.toggleFavorite(currentSong)}} >
+                                    <i className={`icon ${this.getFavotireIcon(currentSong)}`}></i>
                                 </div>
 
                             </div>
@@ -258,6 +259,36 @@ class Player extends Component {
 
 
 
+    }
+
+    
+    @autobind
+    getFavotireIcon(song){
+        let list = this.props.favoriteList.slice()
+        if(this._isFavorite(song,list)){
+            return 'icon-favorite'
+        }
+        return 'icon-not-favorite'
+        
+    }
+
+    @autobind
+    toggleFavorite(song){
+        let list = this.props.favoriteList.slice()
+        if(this._isFavorite(song,list)){
+            this.props.deleteFavotite(song)
+            
+        }else{
+            this.props.saveFavorite(song)
+        }
+       
+    }
+
+    @autobind
+    _isFavorite(song,list){
+        let index = list.findIndex(item => item.id === song.id)
+        return index > -1
+        
     }
 
     @autobind
@@ -546,9 +577,6 @@ class Player extends Component {
 
         //  保存 播放记录
         this.props.savePlayHistory(this.props.currentSong)
-
-
-
     }
 
     /**

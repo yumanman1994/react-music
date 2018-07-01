@@ -2,7 +2,7 @@
  * @Author: 余小蛮-1029686739@qq.com 
  * @Date: 2018-04-25 22:15:07 
  * @Last Modified by: 余小蛮-1029686739@qq.com
- * @Last Modified time: 2018-06-29 22:49:20
+ * @Last Modified time: 2018-07-01 18:41:56
  * @desc storage 相关
  */
 
@@ -14,12 +14,16 @@ import {
     clearSearch,
     deleteSearch,
     loadPlay,
-    savePlay
+    savePlay,
+    loadFavoriteList,
+    saveFavorite,
+    deleteFavotite
 } from 'common/js/cache'
 
 class Storage {
     @observable searchHistory = loadSearch()
     @observable playHistory = loadPlay()
+    @observable favoriteList = loadFavoriteList()
 
     @action.bound
     saveSearchHistory(query){
@@ -43,6 +47,16 @@ class Storage {
         
         this.playHistory = savePlay(song)
 
+    }
+
+    @action.bound
+    saveFavorite(song){
+        this.favoriteList = saveFavorite(song)
+    }
+
+    @action.bound
+    deleteFavotite(song){
+        this.favoriteList = deleteFavotite(song)
     }
 
     
